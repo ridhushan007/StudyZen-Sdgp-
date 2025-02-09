@@ -9,9 +9,9 @@ import { Switch } from "@/components/ui/switch"
 interface Reply {
   id: number
   text: string
-  author: string | null
-  isAnonymous: boolean
   time: string
+  isAnonymous: boolean
+  author: string | null
 }
 
 interface Confession {
@@ -35,15 +35,7 @@ export default function ConfessionsPage() {
       time: "2 hours ago",
       isAnonymous: false,
       author: "Student123",
-      replies: [
-        {
-          id: 1,
-          text: "Don't worry, we've all been there. Try breaking down your tasks into smaller chunks.",
-          author: "Helper1",
-          isAnonymous: false,
-          time: "1 hour ago"
-        }
-      ]
+      replies: []
     },
     {
       id: 2,
@@ -69,9 +61,9 @@ export default function ConfessionsPage() {
 
   const [newConfession, setNewConfession] = useState("")
   const [isAnonymous, setIsAnonymous] = useState(true)
-  const [replyText, setReplyText] = useState<{ [key: number]: string }>({})
-  const [showReplyBox, setShowReplyBox] = useState<{ [key: number]: boolean }>({})
-  const [isReplyAnonymous, setIsReplyAnonymous] = useState<{ [key: number]: boolean }>({})
+  const [replyText, setReplyText] = useState("")
+  const [replyingTo, setReplyingTo] = useState<number | null>(null)
+  const [isReplyAnonymous, setIsReplyAnonymous] = useState(true)
   const currentUser = "Student123"
   const [charactersRemaining, setCharactersRemaining] = useState(500)
 
@@ -93,6 +85,31 @@ export default function ConfessionsPage() {
       ])
       setNewConfession("")
       setCharactersRemaining(500)
+    }
+  }
+
+  const handleReplySubmit = (confessionId: number) => {
+    if (replyText.trim()) {
+      setConfessions(confessions.map(confession => {
+        if (confession.id === confessionId) {
+          return {
+            ...confession,
+            replies: [
+              ...confession.replies,
+              {
+                id: confession.replies.length + 1,
+                text: replyText,
+                time: "Just now",
+                isAnonymous: isReplyAnonymous,
+                author: isReplyAnonymous ? null : currentUser
+              }
+            ]
+          }
+        }
+        return confession
+      }))
+      setReplyText("")
+      setReplyingTo(null)
     }
   }
 
@@ -120,52 +137,20 @@ export default function ConfessionsPage() {
     ))
   }
 
-  const toggleReplyBox = (confessionId: number) => {
-    setShowReplyBox(prev => ({
-      ...prev,
-      [confessionId]: !prev[confessionId]
-    }))
-  }
-
-  const handleReply = (confessionId: number) => {
-    if (replyText[confessionId]?.trim()) {
-      setConfessions(confessions.map(confession =>
-        confession.id === confessionId
-          ? {
-              ...confession,
-              replies: [
-                ...confession.replies,
-                {
-                  id: confession.replies.length + 1,
-                  text: replyText[confessionId],
-                  author: isReplyAnonymous[confessionId] ? null : currentUser,
-                  isAnonymous: isReplyAnonymous[confessionId] || false,
-                  time: "Just now"
-                }
-              ]
-            }
-          : confession
-      ))
-      setReplyText(prev => ({ ...prev, [confessionId]: "" }))
-      setShowReplyBox(prev => ({ ...prev, [confessionId]: false }))
-    }
-  }
-
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Public Confessions</h1>
-      <Card>
+    <div className="max-w-4xl mx-auto p-6">
+      <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Share Your Thoughts</CardTitle>
+          <CardTitle>Public Confessions</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4 relative">
               <Textarea
+                placeholder="Share your confession..."
                 value={newConfession}
                 onChange={handleTextChange}
-                placeholder="Write your confession here (500-character limit)"
-                className="min-h-[100px] resize-none"
+                className="min-h-[100px]"
               />
               <div className="absolute bottom-2 right-2 text-sm text-muted-foreground">
                 {charactersRemaining} characters remaining
@@ -239,77 +224,75 @@ export default function ConfessionsPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toggleReplyBox(confession.id)}
+                  onClick={() => setReplyingTo(replyingTo === confession.id ? null : confession.id)}
                   className="flex items-center gap-2"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  <span>{confession.replies.length}</span>
+                  <span>Reply</span>
                 </Button>
               </div>
 
-              {/* Replies Section */}
-              <div className="mt-4 space-y-4">
-                {confession.replies.map((reply) => (
-                  <div key={reply.id} className="pl-6 border-l-2 mt-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      {reply.isAnonymous ? (
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                          <UserX className="h-3 w-3" />
-                          <span className="text-sm">Anonymous User</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1 text-primary">
-                          <UserCircle className="h-3 w-3" />
-                          <span className="text-sm">{reply.author}</span>
-                        </div>
-                      )}
-                      <span className="text-sm text-muted-foreground ml-auto">
-                        {reply.time}
-                      </span>
-                    </div>
-                    <p className="text-sm">{reply.text}</p>
-                  </div>
-                ))}
-
-                {/* Reply Input Box */}
-                {showReplyBox[confession.id] && (
-                  <div className="mt-4 space-y-2">
+              {/* Reply Form */}
+              {replyingTo === confession.id && (
+                <div className="mt-4 pl-4 border-l-2">
+                  <div className="mb-4">
                     <Textarea
-                      value={replyText[confession.id] || ""}
-                      onChange={(e) => setReplyText(prev => ({
-                        ...prev,
-                        [confession.id]: e.target.value
-                      }))}
                       placeholder="Write your reply..."
-                      className="min-h-[80px] text-sm"
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      className="min-h-[80px]"
                     />
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={isReplyAnonymous[confession.id] || false}
-                          onCheckedChange={(checked) => setIsReplyAnonymous(prev => ({
-                            ...prev,
-                            [confession.id]: checked
-                          }))}
-                          id={`reply-anonymous-${confession.id}`}
-                        />
-                        <label
-                          htmlFor={`reply-anonymous-${confession.id}`}
-                          className="text-sm font-medium leading-none"
-                        >
-                          Reply Anonymously
-                        </label>
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={() => handleReply(confession.id)}
-                      >
-                        Reply
-                      </Button>
-                    </div>
                   </div>
-                )}
-              </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={isReplyAnonymous}
+                        onCheckedChange={setIsReplyAnonymous}
+                        id={`reply-anonymous-${confession.id}`}
+                      />
+                      <label
+                        htmlFor={`reply-anonymous-${confession.id}`}
+                        className="text-sm font-medium"
+                      >
+                        Reply Anonymously
+                      </label>
+                    </div>
+                    <Button
+                      onClick={() => handleReplySubmit(confession.id)}
+                      size="sm"
+                    >
+                      Submit Reply
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Replies List */}
+              {confession.replies.length > 0 && (
+                <div className="mt-4 pl-4 border-l-2 space-y-3">
+                  {confession.replies.map((reply) => (
+                    <div key={reply.id} className="bg-gray-50 p-3 rounded-md">
+                      <div className="flex items-center gap-2 mb-1">
+                        {reply.isAnonymous ? (
+                          <div className="flex items-center gap-1 text-muted-foreground">
+                            <UserX className="h-4 w-4" />
+                            <span className="text-sm">Anonymous User</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1 text-primary">
+                            <UserCircle className="h-4 w-4" />
+                            <span className="text-sm">{reply.author}</span>
+                          </div>
+                        )}
+                        <span className="text-sm text-muted-foreground ml-auto">
+                          {reply.time}
+                        </span>
+                      </div>
+                      <p className="text-sm">{reply.text}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
