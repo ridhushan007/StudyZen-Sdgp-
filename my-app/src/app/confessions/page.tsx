@@ -1,115 +1,110 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ThumbsUp, ThumbsDown, UserCircle, UserX, MessageCircle } from 'lucide-react'
 import { Switch } from "@/components/ui/switch"
+import { confessionApi } from '../api/confessions';
+
+import { toast } from 'react-hot-toast'
 
 interface Reply {
-  id: number
+  _id: string
   text: string
-  time: string
+  timestamp: string
   isAnonymous: boolean
   author: string | null
 }
 
 interface Confession {
-  id: number
+  _id: string
   text: string
   likes: number
   dislikes: number
-  time: string
+  timestamp: string
   isAnonymous: boolean
   author: string | null
   replies: Reply[]
 }
 
 export default function ConfessionsPage() {
-  const [confessions, setConfessions] = useState<Confession[]>([
-    {
-      id: 1,
-      text: "I've been procrastinating on my assignments and now I'm really behind.",
-      likes: 5,
-      dislikes: 2,
-      time: "2 hours ago",
-      isAnonymous: false,
-      author: "Student123",
-      replies: []
-    },
-    {
-      id: 2,
-      text: "I'm afraid I chose the wrong major but I'm too far in to change now.",
-      likes: 12,
-      dislikes: 1,
-      time: "5 hours ago",
-      isAnonymous: true,
-      author: null,
-      replies: []
-    },
-    {
-      id: 3,
-      text: "I cheated on a test and I feel terrible about it.",
-      likes: 3,
-      dislikes: 10,
-      time: "1 day ago",
-      isAnonymous: true,
-      author: null,
-      replies: []
-    },
-  ])
-
+  const [confessions, setConfessions] = useState<Confession[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [newConfession, setNewConfession] = useState("")
   const [isAnonymous, setIsAnonymous] = useState(true)
   const [replyText, setReplyText] = useState("")
-  const [replyingTo, setReplyingTo] = useState<number | null>(null)
+  const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [isReplyAnonymous, setIsReplyAnonymous] = useState(true)
   const currentUser = "Student123"
   const [charactersRemaining, setCharactersRemaining] = useState(500)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (newConfession.trim()) {
-      setConfessions([
-        {
-          id: confessions.length + 1,
-          text: newConfession,
-          likes: 0,
-          dislikes: 0,
-          time: "Just now",
-          isAnonymous: isAnonymous,
-          author: isAnonymous ? null : currentUser,
-          replies: []
-        },
-        ...confessions
-      ])
-      setNewConfession("")
-      setCharactersRemaining(500)
+  useEffect(() => {
+    loadConfessions()
+  }, [])
+
+  const loadConfessions = async () => {
+    try {
+      setIsLoading(true)
+      const data = await confessionApi.getAllConfessions()
+      setConfessions(data)
+    } catch (error) {
+      toast.error('Failed to load confessions')
+      console.error('Error loading confessions:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const handleReplySubmit = (confessionId: number) => {
-    if (replyText.trim()) {
-      setConfessions(confessions.map(confession => {
-        if (confession.id === confessionId) {
-          return {
-            ...confession,
-            replies: [
-              ...confession.replies,
-              {
-                id: confession.replies.length + 1,
-                text: replyText,
-                time: "Just now",
-                isAnonymous: isReplyAnonymous,
-                author: isReplyAnonymous ? null : currentUser
-              }
-            ]
-          }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (newConfession.trim()) {
+      try {
+        const newConfessionData = {
+          text: newConfession,
+          isAnonymous,
+          author: isAnonymous ? null : currentUser
         }
-        return confession
-      }))
-      setReplyText("")
-      setReplyingTo(null)
+        const savedConfession = await confessionApi.createConfession(newConfessionData)
+        setConfessions([savedConfession, ...confessions])
+        setNewConfession("")
+        setCharactersRemaining(500)
+        toast.success('Confession posted successfully!')
+      } catch (error) {
+        toast.error('Failed to post confession')
+        console.error('Error posting confession:', error)
+      }
+    }
+  }
+
+  const handleReplySubmit = async (confessionId: string) => {
+    if (replyText.trim()) {
+      try {
+        const replyData = {
+          text: replyText,
+          isAnonymous: isReplyAnonymous,
+          author: isReplyAnonymous ? null : currentUser
+        }
+        const savedReply = await confessionApi.addReply(confessionId, replyData)
+        
+        // Update the confession with the new reply
+        setConfessions(confessions.map(confession => {
+          if (confession._id === confessionId) {
+            return {
+              ...confession,
+              replies: [...confession.replies, savedReply]
+            }
+          }
+          return confession
+        }))
+        
+        setReplyText("")
+        setReplyingTo(null)
+        toast.success('Reply posted successfully!')
+      } catch (error) {
+        toast.error('Failed to post reply')
+        console.error('Error posting reply:', error)
+      }
     }
   }
 
@@ -121,20 +116,32 @@ export default function ConfessionsPage() {
     }
   }
 
-  const handleLike = (id: number) => {
-    setConfessions(confessions.map(confession =>
-      confession.id === id
-        ? { ...confession, likes: confession.likes + 1 }
-        : confession
-    ))
+  const handleLike = async (id: string) => {
+    try {
+      const updatedConfession = await confessionApi.likeConfession(id)
+      setConfessions(confessions.map(confession =>
+        confession._id === id ? updatedConfession : confession
+      ))
+    } catch (error) {
+      toast.error('Failed to like confession')
+      console.error('Error liking confession:', error)
+    }
   }
 
-  const handleDislike = (id: number) => {
-    setConfessions(confessions.map(confession =>
-      confession.id === id
-        ? { ...confession, dislikes: confession.dislikes + 1 }
-        : confession
-    ))
+  const handleDislike = async (id: string) => {
+    try {
+      const updatedConfession = await confessionApi.dislikeConfession(id)
+      setConfessions(confessions.map(confession =>
+        confession._id === id ? updatedConfession : confession
+      ))
+    } catch (error) {
+      toast.error('Failed to dislike confession')
+      console.error('Error disliking confession:', error)
+    }
+  }
+
+  if (isLoading) {
+    return <div className="text-center p-6">Loading confessions...</div>
   }
 
   return (
@@ -170,9 +177,7 @@ export default function ConfessionsPage() {
                   Submit Anonymously
                 </label>
               </div>
-              <Button 
-                type="submit" 
-              >
+              <Button type="submit">
                 Submit Confession
               </Button>
             </div>
@@ -183,7 +188,7 @@ export default function ConfessionsPage() {
       <h2 className="text-2xl font-semibold mt-8 mb-4">Recent Confessions</h2>
       <div className="space-y-4">
         {confessions.map((confession) => (
-          <Card key={confession.id}>
+          <Card key={confession._id}>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-2">
                 {confession.isAnonymous ? (
@@ -198,7 +203,7 @@ export default function ConfessionsPage() {
                   </div>
                 )}
                 <span className="text-sm text-muted-foreground ml-auto">
-                  {confession.time}
+                  {new Date(confession.timestamp).toLocaleString()}
                 </span>
               </div>
               <p className="mb-4">{confession.text}</p>
@@ -206,7 +211,7 @@ export default function ConfessionsPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleLike(confession.id)}
+                  onClick={() => handleLike(confession._id)}
                   className="flex items-center gap-2"
                 >
                   <ThumbsUp className="h-4 w-4" />
@@ -215,7 +220,7 @@ export default function ConfessionsPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleDislike(confession.id)}
+                  onClick={() => handleDislike(confession._id)}
                   className="flex items-center gap-2"
                 >
                   <ThumbsDown className="h-4 w-4" />
@@ -224,7 +229,7 @@ export default function ConfessionsPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setReplyingTo(replyingTo === confession.id ? null : confession.id)}
+                  onClick={() => setReplyingTo(replyingTo === confession._id ? null : confession._id)}
                   className="flex items-center gap-2"
                 >
                   <MessageCircle className="h-4 w-4" />
@@ -233,7 +238,7 @@ export default function ConfessionsPage() {
               </div>
 
               {/* Reply Form */}
-              {replyingTo === confession.id && (
+              {replyingTo === confession._id && (
                 <div className="mt-4 pl-4 border-l-2">
                   <div className="mb-4">
                     <Textarea
@@ -248,17 +253,17 @@ export default function ConfessionsPage() {
                       <Switch
                         checked={isReplyAnonymous}
                         onCheckedChange={setIsReplyAnonymous}
-                        id={`reply-anonymous-${confession.id}`}
+                        id={`reply-anonymous-${confession._id}`}
                       />
                       <label
-                        htmlFor={`reply-anonymous-${confession.id}`}
+                        htmlFor={`reply-anonymous-${confession._id}`}
                         className="text-sm font-medium"
                       >
                         Reply Anonymously
                       </label>
                     </div>
                     <Button
-                      onClick={() => handleReplySubmit(confession.id)}
+                      onClick={() => handleReplySubmit(confession._id)}
                       size="sm"
                     >
                       Submit Reply
@@ -271,7 +276,7 @@ export default function ConfessionsPage() {
               {confession.replies.length > 0 && (
                 <div className="mt-4 pl-4 border-l-2 space-y-3">
                   {confession.replies.map((reply) => (
-                    <div key={reply.id} className="bg-gray-50 p-3 rounded-md">
+                    <div key={reply._id} className="bg-gray-50 p-3 rounded-md">
                       <div className="flex items-center gap-2 mb-1">
                         {reply.isAnonymous ? (
                           <div className="flex items-center gap-1 text-muted-foreground">
@@ -285,7 +290,7 @@ export default function ConfessionsPage() {
                           </div>
                         )}
                         <span className="text-sm text-muted-foreground ml-auto">
-                          {reply.time}
+                          {new Date(reply.timestamp).toLocaleString()}
                         </span>
                       </div>
                       <p className="text-sm">{reply.text}</p>
