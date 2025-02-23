@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { ThumbsUp, ThumbsDown, UserCircle, UserX, MessageCircle } from 'lucide-react'
 import { Switch } from "@/components/ui/switch"
 import { confessionApi } from '../api/confessions';
-
 import { toast } from 'react-hot-toast'
 
 interface Reply {

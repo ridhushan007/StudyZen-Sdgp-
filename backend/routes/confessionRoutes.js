@@ -12,8 +12,8 @@ const {
 // Confession routes
 router.post('/', createConfession);
 router.get('/', getAllConfessions);
-router.post('/:id/like', likeConfession);
-router.post('/:id/dislike', dislikeConfession);
+router.post('/:id/like', likeConfession); // Ensure frontend sends { userId }
+router.post('/:id/dislike', dislikeConfession); // Ensure frontend sends { userId }
 router.post('/:id/replies', addReply);
 router.get('/:id/replies', getReplies);
 

@@ -22,6 +22,14 @@ const confessionSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  likedBy: {
+    type: [String], // Array of user IDs who liked the confession
+    default: []
+  },
+  dislikedBy: {
+    type: [String], // Array of user IDs who disliked the confession
+    default: []
+  },
   timestamp: {
     type: Date,
     default: Date.now
