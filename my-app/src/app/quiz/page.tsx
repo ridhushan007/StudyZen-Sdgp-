@@ -51,7 +51,7 @@ export default function QuizZone() {
 
   const navigateToCreateQuiz = () => {
     console.log("Navigating to create quiz page");
-    window.location.href = "/quiz/create";
+    router.push("/quiz/create");
   };
 
   const handleStartQuiz = (id: string) => {
@@ -97,8 +97,8 @@ export default function QuizZone() {
     return (
       <div className="flex h-screen">
         <Sidebar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-lg">Loading quizzes...</div>
+        <div className="flex-1 flex items-center justify-center bg-blue-50 font-mono">
+          <div className="text-lg text-blue-800">Loading quizzes...</div>
         </div>
       </div>
     );
@@ -108,13 +108,13 @@ export default function QuizZone() {
     return (
       <div className="flex h-screen">
         <Sidebar />
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-3xl w-full">
-            <h2 className="text-xl font-semibold text-red-700 mb-4">Error Loading Quizzes</h2>
-            <p className="text-red-600 mb-4">{error}</p>
-            <div className="bg-red-100 p-4 rounded-md">
-              <p className="text-sm text-red-800 mb-2"><strong>Troubleshooting:</strong></p>
-              <ul className="list-disc list-inside text-sm text-red-800 space-y-1">
+        <div className="flex-1 flex items-center justify-center p-6 bg-blue-50 font-mono">
+          <div className="bg-white border border-blue-200 rounded-lg p-6 max-w-3xl w-full">
+            <h2 className="text-xl font-semibold text-blue-900 mb-4">Error Loading Quizzes</h2>
+            <p className="text-blue-800 mb-4">{error}</p>
+            <div className="bg-blue-50 p-4 rounded-md">
+              <p className="text-sm text-blue-800 mb-2"><strong>Troubleshooting:</strong></p>
+              <ul className="list-disc list-inside text-sm text-blue-600 space-y-1">
                 <li>Check that your MongoDB connection string in .env.local is correct</li>
                 <li>Verify that your MongoDB Atlas IP whitelist includes your current IP address</li>
                 <li>Make sure your database user has the correct permissions</li>
@@ -127,7 +127,7 @@ export default function QuizZone() {
                 setLoading(true);
                 fetchQuizzes();
               }}
-              className="mt-6 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
+              className="mt-6 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
             >
               Try Again
             </button>
@@ -140,19 +140,19 @@ export default function QuizZone() {
   return (
     <div className="flex h-screen">
       <Sidebar />
-      <div className="flex-1 overflow-y-auto bg-[#f5f4fa]">
-        <div className="p-8">
-          <div className="bg-[#e9e7f7] rounded-md p-6 mb-8 relative overflow-hidden">
+      <div className="flex-1 overflow-y-auto bg-blue-50 min-h-screen font-mono">
+        <div className="max-w-4xl mx-auto p-8 relative z-10">
+          <div className="bg-white rounded-md p-6 mb-8 relative overflow-hidden shadow-sm">
             <div className="relative z-10">
-              <h1 className="text-2xl font-bold mb-2">Quiz Zone</h1>
-              <p className="text-gray-600">Challenge yourself and create your own quizzes!</p>
+              <h1 className="text-2xl font-bold mb-2 text-blue-900">Quiz Zone</h1>
+              <p className="text-blue-600">Challenge yourself and create your own quizzes!</p>
             </div>
             
-            {/* Create Quiz button using onClick with a direct HTML button */}
+            {/* Create Quiz button */}
             <div className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20">
               <button 
                 onClick={navigateToCreateQuiz}
-                className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 cursor-pointer"
+                className="flex items-center gap-2 bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
                 type="button"
               >
                 <span className="text-lg">+</span> Create Quiz
@@ -161,24 +161,24 @@ export default function QuizZone() {
             
             {/* Background decorative elements */}
             <div className="absolute right-0 top-0 w-full h-full opacity-10">
-              <div className="absolute right-10 top-5 text-9xl font-bold">?</div>
-              <div className="absolute right-40 top-10 text-9xl font-bold">?</div>
-              <div className="absolute right-20 top-20 text-9xl font-bold">?</div>
+              <div className="absolute right-10 top-5 text-9xl font-bold text-blue-400">?</div>
+              <div className="absolute right-40 top-10 text-9xl font-bold text-blue-400">?</div>
+              <div className="absolute right-20 top-20 text-9xl font-bold text-blue-400">?</div>
             </div>
           </div>
 
-          <h2 className="text-xl font-semibold mb-6">Explore Quiz</h2>
+          <h2 className="text-xl font-semibold mb-6 text-blue-900">Explore Quiz</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {quizzes.length === 0 ? (
               <div className="bg-white p-8 rounded-lg shadow text-center col-span-full">
-                <h2 className="text-xl mb-4">No quizzes available</h2>
-                <p className="mb-6 text-gray-600">
+                <h2 className="text-xl mb-4 text-blue-900">No quizzes available</h2>
+                <p className="mb-6 text-blue-600">
                   Create your first quiz to get started!
                 </p>
                 <button
                   onClick={navigateToCreateQuiz}
-                  className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
+                  className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700"
                 >
                   Create Quiz
                 </button>
@@ -191,7 +191,7 @@ export default function QuizZone() {
                 >
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-xl font-semibold">{quiz.title}</h3>
+                      <h3 className="text-xl font-semibold text-blue-900">{quiz.title}</h3>
                       <span className={`px-3 py-1 rounded-full text-sm ${
                         quiz.difficulty === 'Beginner' ? 'bg-green-100 text-green-800' : 
                         quiz.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
@@ -201,11 +201,11 @@ export default function QuizZone() {
                       </span>
                     </div>
                     
-                    <p className="text-gray-600 mb-4 line-clamp-2">
+                    <p className="text-blue-600 mb-4 line-clamp-2">
                       {quiz.description}
                     </p>
                     
-                    <div className="flex items-center space-x-6 text-sm text-gray-500 mb-4">
+                    <div className="flex items-center space-x-6 text-sm text-blue-400 mb-4">
                       <div className="flex items-center">
                         <Rocket className="w-4 h-4 mr-2" />
                         <span>{quiz.questions.length} questions</span>
@@ -219,7 +219,7 @@ export default function QuizZone() {
                     <div className="flex space-x-4">
                       <button
                         onClick={() => handleStartQuiz(quiz._id!)}
-                        className="flex-1 bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800"
+                        className="flex-1 bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-700"
                       >
                         Start Quiz
                       </button>
