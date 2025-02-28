@@ -1,11 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
 const connectDB = require('./config/db');
 const confessionRoutes = require('./routes/confessionRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
+const port = process.env.PORT || 3001;
 
 // Connect to MongoDB
 connectDB();
@@ -25,7 +27,15 @@ app.get('/', (req, res) => {
 // Error handling middleware
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:3001`);
+// Create HTTP server and attach Socket.IO
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(server, { cors: { origin: '*' } });
+
+// Attach chat socket handlers
+require('./socket/chatSocket')(io);
+
+// Start the server (only one listen call)
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
