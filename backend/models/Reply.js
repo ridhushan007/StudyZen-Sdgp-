@@ -19,6 +19,10 @@ const replySchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  userId: {
+    type: String,
+    required: true
+  },
   timestamp: {
     type: Date,
     default: Date.now

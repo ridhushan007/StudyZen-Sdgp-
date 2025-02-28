@@ -14,6 +14,10 @@ const confessionSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  userId: {
+    type: String,
+    required: true
+  },
   likes: {
     type: Number,
     default: 0

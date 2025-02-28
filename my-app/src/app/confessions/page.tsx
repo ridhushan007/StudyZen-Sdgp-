@@ -1,12 +1,14 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ThumbsUp, ThumbsDown, UserCircle, UserX, MessageCircle } from 'lucide-react'
 import { Switch } from "@/components/ui/switch"
-import { confessionApi } from '../api/confessions';
+import { confessionApi } from '../api/confessions'
 import { toast } from 'react-hot-toast'
+import { io, Socket } from 'socket.io-client'
+
 
 interface Reply {
   _id: string
@@ -14,6 +16,7 @@ interface Reply {
   timestamp: string
   isAnonymous: boolean
   author: string | null
+  userId: string
 }
 
 interface Confession {
@@ -24,6 +27,9 @@ interface Confession {
   timestamp: string
   isAnonymous: boolean
   author: string | null
+  userId: string
+  likedBy: string[]
+  dislikedBy: string[]
   replies: Reply[]
 }
 
@@ -35,13 +41,68 @@ export default function ConfessionsPage() {
   const [replyText, setReplyText] = useState("")
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [isReplyAnonymous, setIsReplyAnonymous] = useState(true)
+  const socketRef = useRef<Socket | null>(null)
   const currentUser = "Student123"
   const [charactersRemaining, setCharactersRemaining] = useState(500)
-
+  const [userId, setUserId] = useState<string>("")
+  
   useEffect(() => {
+    // Get or generate user ID
+    const storedUserId = localStorage.getItem('userId')
+    if (storedUserId) {
+      setUserId(storedUserId)
+    } else {
+      const newUserId = 'user_' + Math.random().toString(36).substring(2, 15)
+      localStorage.setItem('userId', newUserId)
+      setUserId(newUserId)
+    }
+    
+    // Connect to socket server
+    const socket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001')
+    socketRef.current = socket
+    
+    // Socket event listeners
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server')
+    })
+    
+    socket.on('newConfession', (confession: Confession) => {
+      setConfessions(prevConfessions => [confession, ...prevConfessions])
+    })
+    
+    socket.on('confessionUpdated', (updatedConfession: Confession) => {
+      setConfessions(prevConfessions => 
+        prevConfessions.map(confession => 
+          confession._id === updatedConfession._id ? updatedConfession : confession
+        )
+      )
+    })
+    
+    socket.on('newReply', ({ confessionId, reply }: { confessionId: string, reply: Reply }) => {
+      setConfessions(prevConfessions => 
+        prevConfessions.map(confession => {
+          if (confession._id === confessionId) {
+            return {
+              ...confession,
+              replies: [...confession.replies, reply]
+            }
+          }
+          return confession
+        })
+      )
+    })
+    
+    // Load initial confessions
     loadConfessions()
+    
+    // Cleanup
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect()
+      }
+    }
   }, [])
-
+  
   const loadConfessions = async () => {
     try {
       setIsLoading(true)
@@ -54,7 +115,7 @@ export default function ConfessionsPage() {
       setIsLoading(false)
     }
   }
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (newConfession.trim()) {
@@ -64,8 +125,8 @@ export default function ConfessionsPage() {
           isAnonymous,
           author: isAnonymous ? null : currentUser
         }
-        const savedConfession = await confessionApi.createConfession(newConfessionData)
-        setConfessions([savedConfession, ...confessions])
+        await confessionApi.createConfession(newConfessionData)
+        // The new confession will be added via the WebSocket
         setNewConfession("")
         setCharactersRemaining(500)
         toast.success('Confession posted successfully!')
@@ -75,7 +136,7 @@ export default function ConfessionsPage() {
       }
     }
   }
-
+  
   const handleReplySubmit = async (confessionId: string) => {
     if (replyText.trim()) {
       try {
@@ -84,19 +145,8 @@ export default function ConfessionsPage() {
           isAnonymous: isReplyAnonymous,
           author: isReplyAnonymous ? null : currentUser
         }
-        const savedReply = await confessionApi.addReply(confessionId, replyData)
-        
-        // Update the confession with the new reply
-        setConfessions(confessions.map(confession => {
-          if (confession._id === confessionId) {
-            return {
-              ...confession,
-              replies: [...confession.replies, savedReply]
-            }
-          }
-          return confession
-        }))
-        
+        await confessionApi.addReply(confessionId, replyData)
+        // The new reply will be added via the WebSocket
         setReplyText("")
         setReplyingTo(null)
         toast.success('Reply posted successfully!')
@@ -106,7 +156,7 @@ export default function ConfessionsPage() {
       }
     }
   }
-
+  
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value
     if (text.length <= 500) {
@@ -114,35 +164,39 @@ export default function ConfessionsPage() {
       setCharactersRemaining(500 - text.length)
     }
   }
-
+  
   const handleLike = async (id: string) => {
     try {
-      const updatedConfession = await confessionApi.likeConfession(id)
-      setConfessions(confessions.map(confession =>
-        confession._id === id ? updatedConfession : confession
-      ))
+      await confessionApi.likeConfession(id)
+      // The updated confession will be received via WebSocket
     } catch (error) {
       toast.error('Failed to like confession')
       console.error('Error liking confession:', error)
     }
   }
-
+  
   const handleDislike = async (id: string) => {
     try {
-      const updatedConfession = await confessionApi.dislikeConfession(id)
-      setConfessions(confessions.map(confession =>
-        confession._id === id ? updatedConfession : confession
-      ))
+      await confessionApi.dislikeConfession(id)
+      // The updated confession will be received via WebSocket
     } catch (error) {
       toast.error('Failed to dislike confession')
       console.error('Error disliking confession:', error)
     }
   }
-
+  
+  const isLikedByUser = (confession: Confession) => {
+    return confession.likedBy.includes(userId)
+  }
+  
+  const isDislikedByUser = (confession: Confession) => {
+    return confession.dislikedBy.includes(userId)
+  }
+  
   if (isLoading) {
     return <div className="text-center p-6">Loading confessions...</div>
   }
-
+  
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card className="mb-8">
@@ -183,7 +237,6 @@ export default function ConfessionsPage() {
           </form>
         </CardContent>
       </Card>
-
       <h2 className="text-2xl font-semibold mt-8 mb-4">Recent Confessions</h2>
       <div className="space-y-4">
         {confessions.map((confession) => (
@@ -208,7 +261,7 @@ export default function ConfessionsPage() {
               <p className="mb-4">{confession.text}</p>
               <div className="flex items-center gap-4">
                 <Button
-                  variant="ghost"
+                  variant={isLikedByUser(confession) ? "default" : "ghost"}
                   size="sm"
                   onClick={() => handleLike(confession._id)}
                   className="flex items-center gap-2"
@@ -217,7 +270,7 @@ export default function ConfessionsPage() {
                   <span>{confession.likes}</span>
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant={isDislikedByUser(confession) ? "default" : "ghost"}
                   size="sm"
                   onClick={() => handleDislike(confession._id)}
                   className="flex items-center gap-2"
@@ -235,7 +288,6 @@ export default function ConfessionsPage() {
                   <span>Reply</span>
                 </Button>
               </div>
-
               {/* Reply Form */}
               {replyingTo === confession._id && (
                 <div className="mt-4 pl-4 border-l-2">
@@ -270,7 +322,6 @@ export default function ConfessionsPage() {
                   </div>
                 </div>
               )}
-
               {/* Replies List */}
               {confession.replies.length > 0 && (
                 <div className="mt-4 pl-4 border-l-2 space-y-3">
