@@ -10,7 +10,7 @@ const SubmitQuizSchema = z.object({
   userId: z.string()
 });
 
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     const body = await req.json();
     const { quizId, answers, userId } = SubmitQuizSchema.parse(body);
@@ -30,14 +30,14 @@ export async function POST(req: Request) {
     }
 
     let score = 0;
-    quiz.questions.forEach((question: any, index: number) => {
+    quiz.questions.forEach((question, index) => {
       if (question.correctAnswer === answers[index]) {
         score += question.marks;
       }
     });
 
     const maxScore = quiz.questions.reduce(
-      (acc: number, q: any) => acc + q.marks,
+      (acc, q) => acc + q.marks,
       0
     );
 
