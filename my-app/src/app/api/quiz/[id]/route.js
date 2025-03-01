@@ -5,8 +5,8 @@ import connectDB from '@/lib/db';
 import Quiz from '@/models/Quiz';
 
 export async function GET(
-  req: Request,
-  context: { params: { id: string } }
+  req,
+  context
 ) {
   const { params } = context;
   
@@ -23,8 +23,8 @@ export async function GET(
 }
 
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
+  req,
+  { params }
 ) {
   try {
     const body = await req.json();
@@ -47,8 +47,8 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+  req,
+  { params }
 ) {
   try {
     await connectDB();

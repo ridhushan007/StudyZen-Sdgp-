@@ -21,7 +21,7 @@ export async function GET() {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     console.log('API: Creating new quiz...');
     const body = await req.json();
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       category: body.category,
       difficulty: body.difficulty,
       timeLimit: body.timeLimit,
-      questions: body.questions.map((q: any) => ({
+      questions: body.questions.map((q) => ({
         questionText: q.questionText,
         questionType: q.questionType,
         options: q.options,
