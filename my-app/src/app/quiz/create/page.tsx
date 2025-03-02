@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Sidebar } from '@/components/ui/sidebar';
 import { ChevronLeft, Trash2 } from 'lucide-react';
 import { quizService } from '@/lib/services/quizService';
-import { Toast } from '@/components/ui/toast';
+import { Toast, ToastType } from '@/components/ui/toast';
 import type { Question, Quiz } from '@/lib/types/quiz';
 
 export default function CreateQuiz() {
@@ -13,7 +13,7 @@ export default function CreateQuiz() {
   const [toast, setToast] = useState({
     show: false,
     message: '',
-    type: 'success' as const,
+    type: 'success' as ToastType,
   });
 
   const [quizData, setQuizData] = useState<Partial<Quiz>>({
