@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { QuizSchema } from '@/lib/validations/quiz';
 import type { Quiz, Question } from '@/lib/types/quiz';
+import { z } from 'zod';
 
 interface QuizFormProps {
   onSubmit: (data: Omit<Quiz, '_id'>) => Promise<void>;
@@ -24,17 +25,36 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, initialData }) => 
     ...initialData
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  // Define the type for form errors
+  type FormErrors = {
+    [key: string]: string;
+  };
+
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const validateField = (name: string, value: any) => {
     try {
-      const fieldSchema = QuizSchema.shape[name];
-      fieldSchema.parse(value);
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      if (name in QuizSchema.shape) {
+        // Dynamically access the shape property
+        const fieldSchema = QuizSchema.shape[name as keyof z.infer<typeof QuizSchema>];
+        if (fieldSchema) {
+          // Create a single-field schema
+          const singleFieldSchema = z.object({ [name]: fieldSchema });
+          singleFieldSchema.parse({ [name]: value });
+          setErrors(prev => ({ ...prev, [name]: '' }));
+          return true;
+        }
+      }
       return true;
     } catch (error) {
-      setErrors(prev => ({ ...prev, [name]: error.errors[0].message }));
-      return false;
+      if (error instanceof z.ZodError) {
+        setErrors(prev => ({ 
+          ...prev, 
+          [name]: error.errors[0]?.message || `Invalid ${name}` 
+        }));
+        return false;
+      }
+      return true;
     }
   };
 
@@ -72,11 +92,15 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, initialData }) => 
       const validatedData = QuizSchema.parse(quizData);
       await onSubmit(validatedData);
     } catch (error) {
-      const formErrors: Record<string, string> = {};
-      error.errors.forEach((err: any) => {
-        formErrors[err.path[0]] = err.message;
-      });
-      setErrors(formErrors);
+      if (error instanceof z.ZodError) {
+        const formErrors: FormErrors = {};
+        error.errors.forEach((err) => {
+          if (err.path.length > 0) {
+            formErrors[err.path[0]] = err.message;
+          }
+        });
+        setErrors(formErrors);
+      }
     }
   };
 

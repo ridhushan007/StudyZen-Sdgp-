@@ -17,7 +17,7 @@ export const quizService = {
       return response.data;
     } catch (error: any) {
       console.error('Service: Error in getAllQuizzes:', error);
-      if (axios.isAxiosError(error)) {
+      if (error.isAxiosError) {
         const errorDetails = error.response?.data?.details || '';
         throw new QuizServiceError(
           `Failed to fetch quizzes: ${error.response?.data?.error || error.message} ${errorDetails ? `(${errorDetails})` : ''}`,
@@ -33,7 +33,7 @@ export const quizService = {
       const response = await axios.get<Quiz>(`/api/quiz/${id}`);
       return response.data;
     } catch (error: any) {
-      if (axios.isAxiosError(error)) {
+      if (error.isAxiosError) {
         if (error.response?.status === 404) {
           throw new QuizServiceError('Quiz not found', 404);
         }
@@ -66,7 +66,7 @@ export const quizService = {
         throw error;
       }
       
-      if (axios.isAxiosError(error)) {
+      if (error.isAxiosError) {
         throw new QuizServiceError(
           error.response?.data?.error || 'Failed to create quiz',
           error.response?.status
@@ -81,7 +81,7 @@ export const quizService = {
       const response = await axios.put<Quiz>(`/api/quiz/${id}`, quizData);
       return response.data;
     } catch (error: any) {
-      if (axios.isAxiosError(error)) {
+      if (error.isAxiosError) {
         if (error.response?.status === 404) {
           throw new QuizServiceError('Quiz not found', 404);
         }
@@ -98,7 +98,7 @@ export const quizService = {
     try {
       await axios.delete(`/api/quiz/${id}`);
     } catch (error: any) {
-      if (axios.isAxiosError(error)) {
+      if (error.isAxiosError) {
         if (error.response?.status === 404) {
           throw new QuizServiceError('Quiz not found', 404);
         }
@@ -126,9 +126,26 @@ export const quizService = {
         answers,
         userId,
       });
-      return response.data;
+      
+      // Explicitly type and validate the response data
+      const result = response.data as {
+        score: number;
+        maxScore: number;
+        submission: string;
+      };
+      
+      // Verify that the required properties exist
+      if (
+        typeof result.score !== 'number' ||
+        typeof result.maxScore !== 'number' ||
+        typeof result.submission !== 'string'
+      ) {
+        throw new Error('Invalid response format from quiz submission');
+      }
+      
+      return result;
     } catch (error: any) {
-      if (axios.isAxiosError(error)) {
+      if (error.isAxiosError) {
         throw new QuizServiceError(
           error.response?.data?.error || 'Failed to submit quiz',
           error.response?.status
