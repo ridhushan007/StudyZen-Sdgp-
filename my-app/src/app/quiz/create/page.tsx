@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sidebar } from '@/components/Sidebar';
+import { Sidebar } from '@/components/ui/sidebar';
 import { ChevronLeft, Trash2 } from 'lucide-react';
 import { quizService } from '@/lib/services/quizService';
-import { Toast } from '@/components/ui/Toast';
+import { Toast } from '@/components/ui/toast';
 import type { Question, Quiz } from '@/lib/types/quiz';
 
 export default function CreateQuiz() {
