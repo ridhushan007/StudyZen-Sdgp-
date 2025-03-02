@@ -58,7 +58,8 @@ export default function ConfessionsPage() {
     }
     
     // Connect to socket server
-    const socket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001')
+    
+    const socket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001');
     socketRef.current = socket
     
     // Socket event listeners
@@ -239,7 +240,7 @@ export default function ConfessionsPage() {
       </Card>
       <h2 className="text-2xl font-semibold mt-8 mb-4">Recent Confessions</h2>
       <div className="space-y-4">
-        {confessions.map((confession) => (
+      {confessions && confessions.length > 0 ? confessions.map((confession) => (
           <Card key={confession._id}>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-2">
@@ -323,7 +324,7 @@ export default function ConfessionsPage() {
                 </div>
               )}
               {/* Replies List */}
-              {confession.replies.length > 0 && (
+              {confession.replies && confession.replies.length > 0 && (
                 <div className="mt-4 pl-4 border-l-2 space-y-3">
                   {confession.replies.map((reply) => (
                     <div key={reply._id} className="bg-gray-50 p-3 rounded-md">
@@ -350,7 +351,9 @@ export default function ConfessionsPage() {
               )}
             </CardContent>
           </Card>
-        ))}
+        )) : (
+          <div className="text-center p-6">No confessions yet. Be the first to share!</div>
+        )}
       </div>
     </div>
   )
