@@ -7,7 +7,7 @@ import { quizService } from '@/lib/services/quizService';
 import type { Quiz } from '@/lib/types/quiz';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Toast, ToastType } from '@/components/ui/toast';
+import { Toast, ToastType } from '@/components/ui/Toast';
 
 const TakeQuiz = ({ params }: { params: { id: string } }) => {
   const router = useRouter();

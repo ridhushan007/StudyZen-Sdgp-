@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { quizService } from '@/lib/services/quizService';
 import { Sidebar } from '@/components/ui/sidebar';
 import { Clock, Rocket } from 'lucide-react';
-import { Toast, ToastType } from '@/components/ui/toast';
+import { Toast, ToastType } from '@/components/ui/Toast';
 import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import type { Quiz } from '@/lib/types/quiz';
 
