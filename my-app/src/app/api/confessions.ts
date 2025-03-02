@@ -15,54 +15,63 @@ interface ReplyData {
   author: string | null;
 }
 
+// A safer way to get userId that works with SSR
+const getUserId = (): string => {
+  if (typeof window !== 'undefined') {
+    const storedId = localStorage.getItem('userId');
+    if (storedId) return storedId;
+    
+    // Generate a more stable ID
+    const newId = 'user_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+    localStorage.setItem('userId', newId);
+    return newId;
+  }
+  
+  // Return a placeholder during SSR
+  return 'ssr-placeholder-id';
+};
+
 export const confessionApi = {
-  getAllConfessions: async (): Promise<Confession[]> => {
+  getAllConfessions: async (): Promise<any[]> => {
     const response = await axios.get(`${API_URL}/confessions`);
     return response.data;
   },
   
-  createConfession: async (confessionData: ConfessionData): Promise<Confession> => {
+  createConfession: async (confessionData: ConfessionData): Promise<any> => {
     const response = await axios.post(`${API_URL}/confessions`, {
       ...confessionData,
-      userId: localStorage.getItem('userId') || generateUserId()
+      userId: getUserId()
     });
     return response.data;
   },
   
-  likeConfession: async (confessionId: string): Promise<Confession> => {
+  likeConfession: async (confessionId: string): Promise<any> => {
     const response = await axios.post(`${API_URL}/confessions/${confessionId}/like`, {
-      userId: localStorage.getItem('userId') || generateUserId()
+      userId: getUserId()
     });
     return response.data;
   },
   
-  dislikeConfession: async (confessionId: string): Promise<Confession> => {
+  dislikeConfession: async (confessionId: string): Promise<any> => {
     const response = await axios.post(`${API_URL}/confessions/${confessionId}/dislike`, {
-      userId: localStorage.getItem('userId') || generateUserId()
+      userId: getUserId()
     });
     return response.data;
   },
   
-  addReply: async (confessionId: string, replyData: ReplyData): Promise<Reply> => {
+  addReply: async (confessionId: string, replyData: ReplyData): Promise<any> => {
     const response = await axios.post(`${API_URL}/confessions/${confessionId}/replies`, {
       ...replyData,
-      userId: localStorage.getItem('userId') || generateUserId()
+      userId: getUserId()
     });
     return response.data;
   },
   
-  getReplies: async (confessionId: string): Promise<Reply[]> => {
+  getReplies: async (confessionId: string): Promise<any[]> => {
     const response = await axios.get(`${API_URL}/confessions/${confessionId}/replies`);
     return response.data;
   }
 };
-
-// Generate and store a unique ID for the current user
-function generateUserId(): string {
-  const userId = 'user_' + Math.random().toString(36).substring(2, 15);
-  localStorage.setItem('userId', userId);
-  return userId;
-}
 
 // Types for Confession and Reply
 export interface Confession {
