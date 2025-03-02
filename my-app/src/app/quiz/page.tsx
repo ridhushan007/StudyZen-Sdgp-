@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { quizService } from '@/lib/services/quizService';
 import { Sidebar } from '@/components/ui/sidebar';
 import { Clock, Rocket } from 'lucide-react';
-import { Toast } from '@/components/ui/toast';
+import { Toast, ToastType } from '@/components/ui/toast';
 import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import type { Quiz } from '@/lib/types/quiz';
 
@@ -17,7 +17,7 @@ export default function QuizZone() {
   const [toast, setToast] = useState({
     show: false,
     message: '',
-    type: 'success' as const,
+    type: 'success' as ToastType,
   });
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,

@@ -7,7 +7,7 @@ import { quizService } from '@/lib/services/quizService';
 import type { Quiz } from '@/lib/types/quiz';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Toast } from '@/components/ui/Toast';
+import { Toast, ToastType } from '@/components/ui/toast';
 
 const TakeQuiz = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -18,7 +18,7 @@ const TakeQuiz = ({ params }: { params: { id: string } }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [toast, setToast] = useState({ show: false, message: '', type: 'success' as const });
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' as ToastType });
   const [result, setResult] = useState<{ score: number; maxScore: number } | null>(null);
 
   useEffect(() => {
