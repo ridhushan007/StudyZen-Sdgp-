@@ -35,6 +35,10 @@ const io = new Server(server, { cors: { origin: '*' } });
 // Attach chat socket handlers
 require('./socket/chatSocket')(io);
 
+// Journal API routes
+const journalRoutes = require('./routes/journalRoutes');
+app.use('/api/journal-entries', journalRoutes);
+
 // Start the server (only one listen call)
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
