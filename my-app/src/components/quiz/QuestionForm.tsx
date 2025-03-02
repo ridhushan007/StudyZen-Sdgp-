@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { X } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Question } from '@/lib/types/quiz';
 
 interface QuestionFormProps {

@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { quizService } from '@/lib/services/quizService';
-import { Sidebar } from '@/components/Sidebar';
+import { Sidebar } from '@/components/ui/sidebar';
 import { Clock, Rocket } from 'lucide-react';
-import { Toast } from '@/components/ui/Toast';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { Toast } from '@/components/ui/toast';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import type { Quiz } from '@/lib/types/quiz';
 
 export default function QuizZone() {

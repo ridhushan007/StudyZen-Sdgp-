@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { QuestionForm } from './QuestionForm';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { QuizSchema } from '@/lib/validations/quiz';
 import type { Quiz, Question } from '@/lib/types/quiz';
 

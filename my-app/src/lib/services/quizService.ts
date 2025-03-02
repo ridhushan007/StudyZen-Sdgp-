@@ -15,7 +15,7 @@ export const quizService = {
       const response = await axios.get<Quiz[]>('/api/quiz');
       console.log('Service: Response received', response.status);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Service: Error in getAllQuizzes:', error);
       if (axios.isAxiosError(error)) {
         const errorDetails = error.response?.data?.details || '';
@@ -32,7 +32,7 @@ export const quizService = {
     try {
       const response = await axios.get<Quiz>(`/api/quiz/${id}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
           throw new QuizServiceError('Quiz not found', 404);
@@ -61,7 +61,7 @@ export const quizService = {
       
       const response = await axios.post<Quiz>('/api/quiz', quizData);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof QuizServiceError) {
         throw error;
       }
@@ -80,7 +80,7 @@ export const quizService = {
     try {
       const response = await axios.put<Quiz>(`/api/quiz/${id}`, quizData);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
           throw new QuizServiceError('Quiz not found', 404);
@@ -97,7 +97,7 @@ export const quizService = {
   async deleteQuiz(id: string): Promise<void> {
     try {
       await axios.delete(`/api/quiz/${id}`);
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
           throw new QuizServiceError('Quiz not found', 404);
@@ -127,7 +127,7 @@ export const quizService = {
         userId,
       });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         throw new QuizServiceError(
           error.response?.data?.error || 'Failed to submit quiz',
