@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import connectDB from '@/lib/db';
+import connectDB from '../../../../../backend/config/db';
 import Quiz from '@/models/Quiz';
 import QuizSubmission from '@/models/QuizSubmission';
 
