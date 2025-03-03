@@ -1,6 +1,27 @@
 import { NextResponse } from 'next/server';
-import connectDB from '../../../../backend/config/db';
+import mongoose from 'mongoose';
 import Quiz from '@/models/Quiz';
+
+const connectDB = async () => {
+  try {
+    if (mongoose.connection.readyState >= 1) {
+      return;
+    }
+
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI is not defined in environment variables');
+    }
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB connected');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
+};
 
 export async function GET() {
   try {
@@ -27,7 +48,6 @@ export async function POST(req) {
     const body = await req.json();
     await connectDB();
     
-    // Ensure createdBy is a string if provided
     if (body.createdBy && typeof body.createdBy !== 'string') {
       body.createdBy = String(body.createdBy);
     }

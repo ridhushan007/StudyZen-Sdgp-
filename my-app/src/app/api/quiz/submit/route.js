@@ -1,8 +1,29 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import connectDB from '../../../../../backend/config/db';
+import mongoose from 'mongoose';
 import Quiz from '@/models/Quiz';
 import QuizSubmission from '@/models/QuizSubmission';
+
+const connectDB = async () => {
+  try {
+    if (mongoose.connection.readyState >= 1) {
+      return;
+    }
+
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI is not defined in environment variables');
+    }
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB connected');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
+};
 
 const SubmitQuizSchema = z.object({
   quizId: z.string(),
@@ -41,7 +62,7 @@ export async function POST(req) {
       0
     );
 
-    // Create submission with string userId (no longer trying to convert to ObjectId)
+    // Create submission with string userId 
     const submission = await QuizSubmission.create({
       quiz: quizId,
       user: userId, // Now expecting a string
