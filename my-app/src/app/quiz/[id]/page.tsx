@@ -93,19 +93,19 @@ const TakeQuiz = ({ params }: { params: { id: string } }) => {
   };
 
   if (loading) return (
-    <div className="flex justify-center items-center min-h-screen bg-blue-50 font-mono">
+    <div className="flex-1 flex justify-center items-center min-h-screen bg-blue-50 font-mono">
       <div className="text-lg text-blue-800">Loading...</div>
     </div>
   );
   
   if (error) return (
-    <div className="flex justify-center items-center min-h-screen bg-blue-50 font-mono">
+    <div className="flex-1 flex justify-center items-center min-h-screen bg-blue-50 font-mono">
       <div className="text-lg text-blue-800">Error: {error}</div>
     </div>
   );
   
   if (!quiz) return (
-    <div className="flex justify-center items-center min-h-screen bg-blue-50 font-mono">
+    <div className="flex-1 flex justify-center items-center min-h-screen bg-blue-50 font-mono">
       <div className="text-lg text-blue-800">Quiz not found</div>
     </div>
   );

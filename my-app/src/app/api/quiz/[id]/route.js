@@ -1,15 +1,34 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { QuizSchema } from '@/lib/validations/quiz';
-import connectDB from '../../../../../backend/config/db';
+import mongoose from 'mongoose';
 import Quiz from '@/models/Quiz';
 
+const connectDB = async () => {
+  try {
+    if (mongoose.connection.readyState >= 1) {
+      return;
+    }
+
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI is not defined in environment variables');
+    }
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB connected');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
+};
+
 export async function GET(
-  req,
-  context
+  request,
+  { params }
 ) {
-  const { params } = context;
-  
   try {
     await connectDB();
     const quiz = await Quiz.findById(params.id);
@@ -23,11 +42,11 @@ export async function GET(
 }
 
 export async function PUT(
-  req,
+  request,
   { params }
 ) {
   try {
-    const body = await req.json();
+    const body = await request.json();
     
     // Validate request body
     const validatedData = QuizSchema.parse(body);
@@ -47,7 +66,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req,
+  request,
   { params }
 ) {
   try {
