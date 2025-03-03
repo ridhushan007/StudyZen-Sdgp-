@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { QuizSchema } from '@/lib/validations/quiz';
-import connectDB from '@/lib/db';
+import connectDB from '../../../../../backend/config/db';
 import Quiz from '@/models/Quiz';
 
 export async function GET(
