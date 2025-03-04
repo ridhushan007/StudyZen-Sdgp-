@@ -19,7 +19,23 @@ const JournalEntrySchema = new mongoose.Schema({
     },
   ],
   mood: String,
+  // New guided reflection fields
+  learningSummary: String,
+  challenges: String,
+  futureActions: String,
+  // New recommendations field to store AI-generated recommendations
+  recommendations: String,
   date: { type: Date, default: Date.now },
+});
+
+// Create a virtual property "id" that equals _id
+JournalEntrySchema.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+// Ensure virtual fields are serialized when converting documents to JSON
+JournalEntrySchema.set('toJSON', {
+  virtuals: true,
 });
 
 module.exports = mongoose.model('JournalEntry', JournalEntrySchema);
