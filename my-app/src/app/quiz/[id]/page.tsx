@@ -183,26 +183,51 @@ const TakeQuiz = ({ params }: { params: { id: string } }) => {
             </h2>
 
             <div className="space-y-3">
-              {quiz.questions[currentQuestion].options.map((option, index) => (
-                <label
-                  key={index}
-                  className={`flex items-center space-x-3 p-4 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors ${
-                    answers[currentQuestion] === option
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-blue-200'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="answer"
-                    value={option}
-                    checked={answers[currentQuestion] === option}
-                    onChange={() => handleAnswerSelect(option)}
-                    className="h-4 w-4 text-blue-600"
-                  />
-                  <span className="flex-1 text-blue-800">{option}</span>
-                </label>
-              ))}
+              {quiz.questions[currentQuestion].questionType === 'true-false' ? (
+                // True/False questions should only show True and False options
+                ['True', 'False'].map((option, index) => (
+                  <label
+                    key={index}
+                    className={`flex items-center space-x-3 p-4 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors ${
+                      answers[currentQuestion] === option
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-blue-200'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="answer"
+                      value={option}
+                      checked={answers[currentQuestion] === option}
+                      onChange={() => handleAnswerSelect(option)}
+                      className="h-4 w-4 text-blue-600"
+                    />
+                    <span className="flex-1 text-blue-800">{option}</span>
+                  </label>
+                ))
+              ) : (
+                // Multiple choice questions show all provided options
+                quiz.questions[currentQuestion].options.map((option, index) => (
+                  <label
+                    key={index}
+                    className={`flex items-center space-x-3 p-4 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors ${
+                      answers[currentQuestion] === option
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-blue-200'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="answer"
+                      value={option}
+                      checked={answers[currentQuestion] === option}
+                      onChange={() => handleAnswerSelect(option)}
+                      className="h-4 w-4 text-blue-600"
+                    />
+                    <span className="flex-1 text-blue-800">{option}</span>
+                  </label>
+                ))
+              )}
             </div>
           </div>
 
