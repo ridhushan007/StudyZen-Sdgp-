@@ -33,43 +33,84 @@ const getUserId = (): string => {
 
 export const confessionApi = {
   getAllConfessions: async (): Promise<any[]> => {
-    const response = await axios.get(`${API_URL}/confessions`);
-    return response.data;
+    try {
+      const response = await axios.get(`${API_URL}/confessions`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching confessions:', error);
+      throw error;
+    }
   },
   
   createConfession: async (confessionData: ConfessionData): Promise<any> => {
-    const response = await axios.post(`${API_URL}/confessions`, {
-      ...confessionData,
-      userId: getUserId()
-    });
-    return response.data;
+    try {
+      const response = await axios.post(`${API_URL}/confessions`, {
+        ...confessionData,
+        userId: getUserId()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating confession:', error);
+      throw error;
+    }
   },
   
   likeConfession: async (confessionId: string): Promise<any> => {
-    const response = await axios.post(`${API_URL}/confessions/${confessionId}/like`, {
-      userId: getUserId()
-    });
-    return response.data;
+    try {
+      const response = await axios.post(`${API_URL}/confessions/${confessionId}/like`, {
+        userId: getUserId()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking confession:', error);
+      throw error;
+    }
   },
   
   dislikeConfession: async (confessionId: string): Promise<any> => {
-    const response = await axios.post(`${API_URL}/confessions/${confessionId}/dislike`, {
-      userId: getUserId()
-    });
-    return response.data;
+    try {
+      const response = await axios.post(`${API_URL}/confessions/${confessionId}/dislike`, {
+        userId: getUserId()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error disliking confession:', error);
+      throw error;
+    }
   },
   
   addReply: async (confessionId: string, replyData: ReplyData): Promise<any> => {
-    const response = await axios.post(`${API_URL}/confessions/${confessionId}/replies`, {
-      ...replyData,
-      userId: getUserId()
-    });
-    return response.data;
+    try {
+      const response = await axios.post(`${API_URL}/confessions/${confessionId}/replies`, {
+        ...replyData,
+        userId: getUserId()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error adding reply:', error);
+      throw error;
+    }
   },
   
   getReplies: async (confessionId: string): Promise<any[]> => {
-    const response = await axios.get(`${API_URL}/confessions/${confessionId}/replies`);
-    return response.data;
+    try {
+      const response = await axios.get(`${API_URL}/confessions/${confessionId}/replies`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching replies:', error);
+      throw error;
+    }
+  },
+  
+  getFlaggedConfessions: async (): Promise<any[]> => {
+    try {
+      const response = await axios.get(`${API_URL}/confessions/flagged`);
+      console.log("Flagged confessions API response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching flagged confessions:', error);
+      throw error;
+    }
   }
 };
 
@@ -95,4 +136,14 @@ export interface Reply {
   isAnonymous: boolean;
   author: string | null;
   userId: string;
+}
+
+export interface FlaggedConfession {
+  _id: string;
+  text: string;
+  userId: string;
+  reason: string;
+  categories: Record<string, boolean>;
+  reviewed: boolean;
+  timestamp: string;
 }
