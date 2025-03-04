@@ -1,4 +1,5 @@
 require('dotenv').config();
+console.log("Google API Key:", process.env.GOOGLE_API_KEY);
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
