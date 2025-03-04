@@ -40,7 +40,44 @@ export default function CreateQuiz() {
 
   const handleQuestionChange = (index: number, field: string, value: string | number) => {
     const updatedQuestions = [...quizData.questions!];
-    (updatedQuestions[index] as any)[field] = value;
+    
+    // Special handling for questionType
+    if (field === 'questionType') {
+      // When changing to true-false type
+      if (value === 'true-false') {
+        updatedQuestions[index] = {
+          ...updatedQuestions[index],
+          [field]: value,
+          options: ['True', 'False'],
+          correctAnswer: '' // Reset correct answer when changing type
+        };
+      } 
+      // When changing to multiple-choice type
+      else if (value === 'multiple-choice') {
+        const currentOptions = updatedQuestions[index].options;
+        // Only reset options if they are currently True/False
+        if (currentOptions.length === 2 && 
+            currentOptions.includes('True') && 
+            currentOptions.includes('False')) {
+          updatedQuestions[index] = {
+            ...updatedQuestions[index],
+            [field]: value,
+            options: ['', '', '', ''],
+            correctAnswer: '' // Reset correct answer when changing type
+          };
+        } else {
+          updatedQuestions[index] = {
+            ...updatedQuestions[index],
+            [field]: value,
+            correctAnswer: '' // Reset correct answer when changing type
+          };
+        }
+      }
+    } else {
+      // Standard field update for other fields
+      (updatedQuestions[index] as any)[field] = value;
+    }
+    
     setQuizData(prev => ({ ...prev, questions: updatedQuestions }));
   };
 
@@ -90,7 +127,8 @@ export default function CreateQuiz() {
 
       // Validate questions
       for (const question of quizData.questions!) {
-        if (!question.questionText || question.options.some(opt => !opt)) {
+        if (!question.questionText || 
+            (question.questionType === 'multiple-choice' && question.options.some(opt => !opt))) {
           setToast({
             show: true,
             message: 'Please fill in all question fields',
@@ -285,25 +323,42 @@ export default function CreateQuiz() {
               <div>
                 <label className="block text-sm font-medium mb-1 text-blue-600">Options</label>
                 <div className="space-y-2">
-                  {question.options.map((option, optionIndex) => (
-                    <div key={optionIndex} className="flex items-center space-x-2">
-                      <input 
-                        type="radio" 
-                        name={`correctAnswer-${questionIndex}`}
-                        checked={question.correctAnswer === option}
-                        onChange={() => handleCorrectAnswerChange(questionIndex, option)}
-                        className="h-4 w-4 text-blue-600"
-                        disabled={!option}
-                      />
-                      <input
-                        type="text"
-                        placeholder={`Option ${optionIndex + 1}`}
-                        value={option}
-                        onChange={(e) => handleOptionChange(questionIndex, optionIndex, e.target.value)}
-                        className="w-full border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
-                  ))}
+                  {question.questionType === 'true-false' ? (
+                    // True/False options
+                    ['True', 'False'].map((option, optionIndex) => (
+                      <div key={optionIndex} className="flex items-center space-x-2">
+                        <input 
+                          type="radio" 
+                          name={`correctAnswer-${questionIndex}`}
+                          checked={question.correctAnswer === option}
+                          onChange={() => handleCorrectAnswerChange(questionIndex, option)}
+                          className="h-4 w-4 text-blue-600"
+                        />
+                        <label className="flex-1 text-blue-800">{option}</label>
+                      </div>
+                    ))
+                  ) : (
+                    // Multiple choice options
+                    question.options.map((option, optionIndex) => (
+                      <div key={optionIndex} className="flex items-center space-x-2">
+                        <input 
+                          type="radio" 
+                          name={`correctAnswer-${questionIndex}`}
+                          checked={question.correctAnswer === option}
+                          onChange={() => handleCorrectAnswerChange(questionIndex, option)}
+                          className="h-4 w-4 text-blue-600"
+                          disabled={!option}
+                        />
+                        <input
+                          type="text"
+                          placeholder={`Option ${optionIndex + 1}`}
+                          value={option}
+                          onChange={(e) => handleOptionChange(questionIndex, optionIndex, e.target.value)}
+                          className="w-full border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
               

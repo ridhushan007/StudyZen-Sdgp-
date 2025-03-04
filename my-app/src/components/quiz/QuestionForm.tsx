@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,36 @@ export const QuestionForm = ({
   onChange,
   questionData,
 }: QuestionFormProps) => {
+  // Update options when question type changes
+  useEffect(() => {
+    if (questionData.questionType === 'true-false' && 
+        (!questionData.options.includes('True') || !questionData.options.includes('False'))) {
+      // Set options to True/False when switching to true-false type
+      onChange({
+        ...questionData,
+        options: ['True', 'False'],
+        correctAnswer: questionData.correctAnswer === 'True' || questionData.correctAnswer === 'False' 
+          ? questionData.correctAnswer 
+          : ''
+      });
+    } else if (questionData.questionType === 'multiple-choice' && 
+               questionData.options.length < 3 && 
+               questionData.options.length === 2 && 
+               questionData.options.includes('True') && 
+               questionData.options.includes('False')) {
+      // Reset options when switching from true-false to multiple-choice
+      onChange({
+        ...questionData,
+        options: ['', '', '', ''],
+        correctAnswer: ''
+      });
+    }
+  }, [questionData.questionType]);
+
   const handleOptionChange = (optionIndex: number, value: string) => {
+    // Only allow changing options for multiple-choice
+    if (questionData.questionType === 'true-false') return;
+    
     const newOptions = [...questionData.options];
     newOptions[optionIndex] = value;
     onChange({ ...questionData, options: newOptions });
