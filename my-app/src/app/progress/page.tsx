@@ -155,6 +155,50 @@ export default function StudyZenDashboard() {
                           </div> 
                         </CardContent>
                     </card>
+                    <Card className="bg-white shadow-md">
+                      <CardHeader>
+                       <CardTitle className="text-blue-900">Your Weekly Progress</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                       <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                         <BarChart
+                          data={weeklyData}
+                          margin={{
+                           top: 20,
+                           right: 30,
+                           left: 0,
+                            bottom: 10,
+                          }}
+                         >
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                          <XAxis dataKey="name" className="text-blue-400" />
+                          <YAxis className="text-blue-400" />
+                          <Tooltip />
+                          <Bar dataKey="Lectures" fill="#3b82f6" />
+                          <Bar dataKey="Assignments" fill="#22c55e" />
+                         </BarChart>
+                        </ResponsiveContainer>
+                       </div>
+              
+                       <div className="flex gap-4 justify-center mt-4 text-blue-600">
+                         <div className="flex items-center">
+                          <div className="w-4 h-4 bg-blue-500 mr-2"></div>
+                          <span>Lectures</span>
+                         </div>
+                         <div className="flex items-center">
+                          <div className="w-4 h-4 bg-green-500 mr-2"></div>
+                          <span>Assignments</span>
+                         </div>
+                       </div>
+              
+                       <div className="mt-6">
+                         <button className="w-full border border-blue-400 text-blue-600 py-2 rounded font-medium hover:bg-blue-50 transition">
+                           View Detailed Stats
+                         </button>
+                       </div>
+                      </CardContent>
+                    </Card>
 
             
 
