@@ -109,7 +109,53 @@ export default function StudyZenDashboard() {
                     </svg>
                    </button>
                   </header>
-                  
+                  <div className="p-6 grid grid-cols-2 gap-6">
+                    <card>
+                        <CardHeader>
+                            <CardTitle>Log Your Activity</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                           <div>
+                            <label className="block text-sm font-medium mb-1">Activity Type</label>
+                            <select 
+                             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                             value={activityType}
+                             onChange={(e) => setActivityType(e.target.value)}
+                            >
+                             <option value="">Select activity type</option>
+                             <option value="lectures">Lectures</option>
+                             <option value="assignments">Assignments</option>
+                             <option value="readings">Readings</option>
+                             <option value="projects">Projects</option>
+                            </select>
+                           </div>
+                           <div>
+                            <label className="block text-sm font-medium mb-1">Hours Spent</label>
+                            <input 
+                             type="text" 
+                             placeholder="Enter hours" 
+                             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                             value={hours}
+                             onChange={(e) => setHours(e.target.value)}
+                             />
+                           </div>
+                           <div>
+                            <label className="block text-sm font-medium mb-1">Notes (Optional)</label>
+                            <textarea 
+                             placeholder="Add additional details" 
+                             className="w-full p-2 border rounded h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                             value={notes}
+                             onChange={(e) => setNotes(e.target.value)}
+                            ></textarea>
+                           </div>
+                           <button className="w-full bg-blue-500 text-white py-3 rounded font-medium hover:bg-blue-600 transition">
+                             Save Progress
+                           </button>
+                          </div> 
+                        </CardContent>
+                    </card>
+
             
 
 
