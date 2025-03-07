@@ -8,6 +8,8 @@ import { Switch } from "@/components/ui/switch"
 import { confessionApi } from '../api/confessions'
 import { toast } from 'react-hot-toast'
 import { io, Socket } from 'socket.io-client'
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface Reply {
   _id: string
@@ -53,6 +55,9 @@ export default function ConfessionsPage() {
   const [charactersRemaining, setCharactersRemaining] = useState(500)
   const [userId, setUserId] = useState("")
   const [isClient, setIsClient] = useState(false)
+  const [moderationError, setModerationError] = useState<string | null>(null);
+  const [moderationReason, setModerationReason] = useState<string | null>(null);
+
   
   // First useEffect just to set client-side state
   useEffect(() => {
@@ -136,25 +141,36 @@ export default function ConfessionsPage() {
   }
   
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+    setModerationError(null);
+    setModerationReason(null);
+    
     if (newConfession.trim()) {
       try {
         const newConfessionData = {
           text: newConfession,
           isAnonymous,
           author: isAnonymous ? null : currentUser
+        };
+        await confessionApi.createConfession(newConfessionData);
+        setNewConfession("");
+        setCharactersRemaining(500);
+        toast.success('Confession posted successfully!');
+      } catch (error: any) {
+        if (error.response && error.response.data) {
+          // Handle moderation errors
+          setModerationError(error.response.data.message || 'Failed to post confession');
+          setModerationReason(error.response.data.reason || null);
+          toast.error('Content moderation issue');
+        } else {
+          toast.error('Failed to post confession');
+          console.error('Error posting confession:', error);
         }
-        await confessionApi.createConfession(newConfessionData)
-        setNewConfession("")
-        setCharactersRemaining(500)
-        toast.success('Confession posted successfully!')
-      } catch (error) {
-        toast.error('Failed to post confession')
-        console.error('Error posting confession:', error)
       }
     }
-  }
+  };
   
+  // Update your handleReplySubmit function:
   const handleReplySubmit = async (confessionId: string) => {
     if (replyText.trim()) {
       try {
@@ -162,16 +178,21 @@ export default function ConfessionsPage() {
           text: replyText,
           isAnonymous: isReplyAnonymous,
           author: isReplyAnonymous ? null : currentUser
+        };
+        await confessionApi.addReply(confessionId, replyData);
+        setReplyText("");
+        toast.success('Reply posted successfully!');
+      } catch (error: any) {
+        if (error.response && error.response.data) {
+          // Handle moderation errors for replies
+          toast.error(error.response.data.message || 'Failed to post reply');
+        } else {
+          toast.error('Failed to post reply');
+          console.error('Error posting reply:', error);
         }
-        await confessionApi.addReply(confessionId, replyData)
-        setReplyText("")
-        toast.success('Reply posted successfully!')
-      } catch (error) {
-        toast.error('Failed to post reply')
-        console.error('Error posting reply:', error)
       }
     }
-  }
+  };
   
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value
@@ -270,6 +291,22 @@ export default function ConfessionsPage() {
                 </Button>
               </div>
             </form>
+            
+            {moderationError && (
+              <Alert variant="destructive" className="mt-4 bg-red-50 border-red-200">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Moderation Alert</AlertTitle>
+                <AlertDescription>
+                  {moderationError}
+                  {moderationReason && (
+                    <div className="mt-2 text-sm opacity-80">
+                      Reason: {moderationReason}
+                    </div>
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
+
           </CardContent>
         </Card>
         
@@ -401,6 +438,7 @@ export default function ConfessionsPage() {
               No confessions yet. Be the first to share!
             </div>
           )}
+          <h2></h2>
         </div>
       </div>
     </div>
