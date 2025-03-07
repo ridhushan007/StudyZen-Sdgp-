@@ -59,7 +59,7 @@ export default function ConfessionsPage() {
   const [moderationReason, setModerationReason] = useState<string | null>(null);
 
   
-  // First useEffect just to set client-side state
+  // useEffect for set client-side state
   useEffect(() => {
     setIsClient(true)
   }, [])
@@ -67,12 +67,12 @@ export default function ConfessionsPage() {
   useEffect(() => {
     if (!isClient) return;
     
-    // Get or generate user ID safely on client only
+    // Get user ID safely
     const storedUserId = localStorage.getItem('userId')
     if (storedUserId) {
       setUserId(storedUserId)
     } else {
-      // Use a more stable ID generation method
+      // more stable ID generation method
       const newUserId = 'user_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5)
       localStorage.setItem('userId', newUserId)
       setUserId(newUserId)
@@ -117,7 +117,6 @@ export default function ConfessionsPage() {
     // Load initial confessions
     loadConfessions()
     
-    // Cleanup
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect()
@@ -170,7 +169,7 @@ export default function ConfessionsPage() {
     }
   };
   
-  // Update your handleReplySubmit function:
+  // handleReplySubmit function
   const handleReplySubmit = async (confessionId: string) => {
     if (replyText.trim()) {
       try {
