@@ -42,6 +42,7 @@ class ModerationService {
           category_scores: result.category_scores
         };
       }
+      
       return {
         flagged: false,
         reason: null,
@@ -58,7 +59,46 @@ class ModerationService {
       };
     }
   }
-
-
+  
+  // Method to detect duplicate/spam content
+  async isDuplicateOrSpam(text, recentConfessions) {
+    // Simple duplicate detection - check if exact text already exists
+    const isDuplicate = recentConfessions.some(confession => 
+      confession.text.toLowerCase() === text.toLowerCase()
+    );
+    
+    if (isDuplicate) {
+      return {
+        flagged: true,
+        reason: 'DUPLICATE: Similar confession was recently posted'
+      };
+    }
+    
+    // Basic spam detection - check for repetitive patterns or excessive URLs
+    const urlCount = (text.match(/https?:\/\//g) || []).length;
+    if (urlCount > 3) {
+      return {
+        flagged: true,
+        reason: 'SPAM: Excessive URLs detected'
+      };
+    }
+    
+    // Check for repetitive text patterns
+    const words = text.toLowerCase().split(/\s+/);
+    const uniqueWords = new Set(words);
+    
+    // If the text has many words but very few unique words, it might be spam
+    if (words.length > 20 && uniqueWords.size / words.length < 0.3) {
+      return {
+        flagged: true,
+        reason: 'SPAM: Repetitive content detected'
+      };
+    }
+    
+    return {
+      flagged: false
+    };
+  }
+}
 
 module.exports = new ModerationService();
