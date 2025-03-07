@@ -42,6 +42,23 @@ class ModerationService {
           category_scores: result.category_scores
         };
       }
+      return {
+        flagged: false,
+        reason: null,
+        categories: result.categories,
+        category_scores: result.category_scores
+      };
+    } catch (error) {
+      console.error('OpenAI Moderation API error:', error);
+      // In case of API failure, let content through but log the error
+      return {
+        flagged: false,
+        reason: 'Moderation API error: ' + error.message,
+        error: true
+      };
+    }
+  }
+
 
 
 module.exports = new ModerationService();
