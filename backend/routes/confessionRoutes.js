@@ -10,11 +10,9 @@ const {
   getFlaggedConfessions
 } = require('../controllers/confessionController');
 
-// Route order matters in Express!
-// More specific routes should come before more general ones
 
 // Flagged confessions route (specific route first)
-router.get('/flagged', getFlaggedConfessions);
+router.get('/flagged', getFlaggedConfessions);  
 
 // General confession routes
 router.post('/', createConfession);
