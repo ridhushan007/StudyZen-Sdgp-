@@ -4,7 +4,7 @@ class ModerationService {
   constructor() {
     // Initialize OpenAI client with API key
     this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || 'placeholder', // Will be replaced with actual key
+      apiKey: "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",
     });
   }
 
