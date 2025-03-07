@@ -1,5 +1,7 @@
 const Confession = require('../models/Confession');
 const Reply = require('../models/Reply');
+const FlaggedConfession = require('../models/FlaggedConfession');
+const moderationService = require('../utils/moderationService');
 
 // Create a new confession
 const createConfession = async (req, res, next) => {
@@ -14,6 +16,74 @@ const createConfession = async (req, res, next) => {
       return res.status(400).json({ message: 'User ID is required' });
     }
     
+    // Check for duplicate or spam content
+    const recentConfessions = await Confession.find()
+      .sort({ timestamp: -1 })
+      .limit(50);
+    
+    const spamCheckResult = await moderationService.isDuplicateOrSpam(text, recentConfessions);
+    
+    if (spamCheckResult.flagged) {
+      // Log the flagged content
+      const flaggedConfession = new FlaggedConfession({
+        text,
+        userId,
+        reason: spamCheckResult.reason,
+        categories: { spam: true }
+      });
+      await flaggedConfession.save();
+      
+      return res.status(400).json({ 
+        message: 'Your confession could not be posted',
+        reason: spamCheckResult.reason
+      });
+    }
+    
+    // Check content with OpenAI's moderation API
+    const moderationResult = await moderationService.moderateContent(text);
+    
+    if (moderationResult.flagged) {
+      // Create a categories object with proper structure for MongoDB
+      const categoriesObj = {};
+      Object.keys(moderationResult.categories).forEach(key => {
+        if (moderationResult.categories[key] === true) {
+          categoriesObj[key] = true;
+        }
+      });
+      
+      // Log the flagged content
+      const flaggedConfession = new FlaggedConfession({
+        text,
+        userId,
+        reason: moderationResult.reason,
+        categories: categoriesObj
+      });
+      await flaggedConfession.save();
+      
+      // For violent content, automatically reject
+      if (moderationResult.reason.includes('AUTO_REMOVED')) {
+        return res.status(400).json({ 
+          message: 'Your confession contains content that violates our community guidelines and cannot be posted.',
+          reason: 'Content contains harmful or threatening material'
+        });
+      }
+      
+      // For self-harm content, flag for review but still return error
+      if (moderationResult.reason.includes('REQUIRES_REVIEW')) {
+        return res.status(400).json({ 
+          message: 'Your confession has been flagged for review by our team. We take your wellbeing seriously and want to ensure our platform remains a safe space for all users.',
+          reason: 'Content requires review for safety concerns'
+        });
+      }
+      
+      // For other flagged content, return appropriate message
+      return res.status(400).json({ 
+        message: 'Your confession could not be posted because it may contain inappropriate content',
+        reason: moderationResult.reason
+      });
+    }
+    
+    // If content passes moderation, save the confession
     const confession = new Confession({
       text,
       isAnonymous,
@@ -43,6 +113,19 @@ const createConfession = async (req, res, next) => {
   } catch (error) {
     console.error('Error creating confession:', error);
     next({ status: 500, message: 'Failed to create confession' });
+  }
+};
+
+// Get flagged confessions
+const getFlaggedConfessions = async (req, res, next) => {
+  try {
+    const flaggedConfessions = await FlaggedConfession.find()
+      .sort({ timestamp: -1 });
+    
+    return res.status(200).json(flaggedConfessions);
+  } catch (error) {
+    console.error('Error fetching flagged confessions:', error);
+    next({ status: 500, message: 'Failed to retrieve flagged confessions' });
   }
 };
 
@@ -201,6 +284,41 @@ const addReply = async (req, res, next) => {
       return res.status(400).json({ message: 'User ID is required' });
     }
     
+    // Check content with OpenAI's moderation API
+    const moderationResult = await moderationService.moderateContent(text);
+    
+    if (moderationResult.flagged) {
+      // Create a categories object with proper structure for MongoDB
+      const categoriesObj = {};
+      Object.keys(moderationResult.categories).forEach(key => {
+        if (moderationResult.categories[key] === true) {
+          categoriesObj[key] = true;
+        }
+      });
+      
+      // Log the flagged content
+      const flaggedConfession = new FlaggedConfession({
+        text,
+        userId,
+        reason: moderationResult.reason,
+        categories: categoriesObj
+      });
+      await flaggedConfession.save();
+      
+      // Return appropriate message based on reason
+      if (moderationResult.reason.includes('AUTO_REMOVED')) {
+        return res.status(400).json({ 
+          message: 'Your reply contains content that violates our community guidelines.',
+          reason: 'Content contains harmful or threatening material'
+        });
+      }
+      
+      return res.status(400).json({ 
+        message: 'Your reply could not be posted because it may contain inappropriate content',
+        reason: moderationResult.reason
+      });
+    }
+    
     const confession = await Confession.findById(req.params.id);
     
     if (!confession) {
@@ -247,5 +365,6 @@ module.exports = {
   likeConfession,
   dislikeConfession,
   addReply,
-  getReplies
+  getReplies,
+  getFlaggedConfessions
 };
