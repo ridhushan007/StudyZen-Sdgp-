@@ -1,15 +1,22 @@
 const Confession = require('../models/Confession');
 const Reply = require('../models/Reply');
+const analyzeText = require('../services/moderator');
+
 // Create a new confession
 const createConfession = async (req, res, next) => {
   try {
     const { text, isAnonymous, author, userId } = req.body;
-    if (!text) {
-      return res.status(400).json({ message: 'Confession text is required' });
+
+    if (!text) return res.status(400).json({ message: 'Confession text is required' });
+    if (!userId) return res.status(400).json({ message: 'User ID is required' });
+
+    // Moderate the confession text
+    const { isToxic, isInsult, isThreat, isExplicit } = await analyzeText(text);
+
+    if (isToxic || isInsult || isThreat || isExplicit) {
+      return res.status(400).json({ message: 'Inappropriate content detected. Please modify your confession.' });
     }
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
+
     const confession = new Confession({
       text,
       isAnonymous,
@@ -20,15 +27,16 @@ const createConfession = async (req, res, next) => {
       likes: 0,
       dislikes: 0
     });
+
     const savedConfession = await confession.save();
-    // Get replies for this confession
+
     const replies = await Reply.find({ confessionId: savedConfession._id }).sort({ timestamp: -1 });
-    // Add replies to the confession object
+
     const confessionWithReplies = {
       ...savedConfession.toObject(),
-      replies: replies
+      replies
     };
-    // Emit event to all connected clients
+
     req.io.emit('newConfession', confessionWithReplies);
     return res.status(201).json(confessionWithReplies);
   } catch (error) {
@@ -36,6 +44,7 @@ const createConfession = async (req, res, next) => {
     next({ status: 500, message: 'Failed to create confession' });
   }
 };
+
 // Get all confessions with their replies
 const getAllConfessions = async (req, res, next) => {
   try {
@@ -157,16 +166,27 @@ const dislikeConfession = async (req, res, next) => {
 const addReply = async (req, res, next) => {
   try {
     const { text, isAnonymous, author, userId } = req.body;
+
     if (!text) {
       return res.status(400).json({ message: 'Reply text is required' });
     }
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
+
     const confession = await Confession.findById(req.params.id);
     if (!confession) {
       return res.status(404).json({ message: 'Confession not found' });
     }
+
+    // Analyze the reply text for harmful content
+    const analysis = await analyzeText(text);
+
+    if (analysis.toxicity > 0.8) {
+      return res.status(400).json({ message: 'Reply contains inappropriate content' });
+    }
+
+    // Save the reply if it passes moderation
     const reply = new Reply({
       confessionId: req.params.id,
       text,
@@ -174,18 +194,22 @@ const addReply = async (req, res, next) => {
       author: isAnonymous ? null : author,
       userId
     });
+
     const savedReply = await reply.save();
+
     // Emit event to all connected clients
     req.io.emit('newReply', {
       confessionId: req.params.id,
       reply: savedReply
     });
+
     return res.status(201).json(savedReply);
   } catch (error) {
     console.error('Error adding reply:', error);
     next({ status: 500, message: 'Failed to add reply' });
   }
 };
+
 // Get replies for a confession
 const getReplies = async (req, res, next) => {
   try {
@@ -204,3 +228,4 @@ module.exports = {
   addReply,
   getReplies
 };
+ 
