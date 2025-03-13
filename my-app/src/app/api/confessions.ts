@@ -147,3 +147,13 @@ export interface FlaggedConfession {
   reviewed: boolean;
   timestamp: string;
 }
+
+export const fetchFlaggedConfessions = async () => {
+  const response = await fetch('/api/confessions/flagged');
+  return response.json();
+};
+
+export const approveConfession = async (id: string) => {
+  const response = await fetch(`/api/confessions/approve/${id}`, { method: 'POST' });
+  return response.json();
+};

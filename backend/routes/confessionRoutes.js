@@ -6,19 +6,15 @@ const {
   likeConfession,
   dislikeConfession,
   addReply,
-  getReplies,
-  getFlaggedConfessions
+  getReplies
 } = require('../controllers/confessionController');
+const moderationMiddleware = require('../middleware/moderationMiddleware'); // Import AI moderation
 
-
-// Flagged confessions route (specific route first)
-router.get('/flagged', getFlaggedConfessions);  
-
-// General confession routes
-router.post('/', createConfession);
+// Confession routes
+router.post('/', moderationMiddleware, createConfession); // AI moderates before storing
 router.get('/', getAllConfessions);
-router.post('/:id/like', likeConfession); // Ensure frontend sends { userId }
-router.post('/:id/dislike', dislikeConfession); // Ensure frontend sends { userId }
+router.post('/:id/like', likeConfession);
+router.post('/:id/dislike', dislikeConfession);
 router.post('/:id/replies', addReply);
 router.get('/:id/replies', getReplies);
 
