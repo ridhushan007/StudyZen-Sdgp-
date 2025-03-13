@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const confessionSchema = new mongoose.Schema({
   text: {
     type: String,
@@ -39,5 +38,4 @@ const confessionSchema = new mongoose.Schema({
     default: Date.now
   }
 });
-
 module.exports = mongoose.model('Confession', confessionSchema);

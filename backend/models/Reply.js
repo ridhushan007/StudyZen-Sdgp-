@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const replySchema = new mongoose.Schema({
   confessionId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -28,5 +27,4 @@ const replySchema = new mongoose.Schema({
     default: Date.now
   }
 });
-
 module.exports = mongoose.model('Reply', replySchema);
