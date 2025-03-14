@@ -194,12 +194,19 @@ export default function ConfessionsPage() {
       if (response.status === 200) {
         // Emit the new reply for real-time updates
         socketRef.current?.emit('newReply', { confessionId, reply: response.data });
+  
+        // Update the local state for the confession
+        setConfessions(prevConfessions => prevConfessions.map(confession => 
+          confession._id === confessionId
+            ? { ...confession, replies: [...confession.replies, response.data] }
+            : confession
+        ));
+  
         setReplyText("");
         toast.success("Reply posted successfully!");
       }
     } catch (error: any) {
       if (error.response && error.response.data) {
-        // Handle moderation errors for replies
         const errorMessage = error.response.data.message || "Failed to post reply";
         const errorReason = error.response.data.reason || "Inappropriate content";
   
@@ -212,6 +219,7 @@ export default function ConfessionsPage() {
       }
     }
   };
+  
   
   
   
