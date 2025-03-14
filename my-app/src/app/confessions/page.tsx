@@ -89,7 +89,7 @@ export default function ConfessionsPage() {
     })
     
     socket.on('newConfession', (confession: Confession) => {
-      setConfessions(prevConfessions => [confession, ...prevConfessions])
+      setConfessions(prevConfessions => [confession, ...prevConfessions]) // Add new confession to the top
     })
     
     socket.on('confessionUpdated', (updatedConfession: Confession) => {
@@ -151,7 +151,11 @@ export default function ConfessionsPage() {
           isAnonymous,
           author: isAnonymous ? null : currentUser
         };
-        await confessionApi.createConfession(newConfessionData);
+        const response = await confessionApi.createConfession(newConfessionData);
+        
+        // Emit the new confession to WebSocket for others to see
+        socketRef.current?.emit('newConfession', response.data);
+        
         setNewConfession("");
         setCharactersRemaining(500);
         toast.success('Confession posted successfully!');
@@ -169,26 +173,36 @@ export default function ConfessionsPage() {
     }
   };
   
-  // handleReplySubmit function
   const handleReplySubmit = async (confessionId: string) => {
-    if (replyText.trim()) {
-      try {
-        const replyData = {
-          text: replyText,
-          isAnonymous: isReplyAnonymous,
-          author: isReplyAnonymous ? null : currentUser
-        };
-        await confessionApi.addReply(confessionId, replyData);
+    if (!replyText.trim()) return;
+  
+    try {
+      const replyData = {
+        text: replyText,
+        isAnonymous: isReplyAnonymous,
+        author: isReplyAnonymous ? null : currentUser,
+      };
+  
+      const response = await confessionApi.addReply(confessionId, replyData);
+      if (response.status === 200) {
+        // Emit the new reply to WebSocket for real-time updates
+        socketRef.current?.emit('newReply', { confessionId, reply: response.data });
+        
         setReplyText("");
-        toast.success('Reply posted successfully!');
-      } catch (error: any) {
-        if (error.response && error.response.data) {
-          // Handle moderation errors for replies
-          toast.error(error.response.data.message || 'Failed to post reply');
-        } else {
-          toast.error('Failed to post reply');
-          console.error('Error posting reply:', error);
-        }
+        toast.success("Reply posted successfully!");
+      }
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message || "Failed to post reply";
+        const errorReason = error.response.data.reason || "Inappropriate content";
+  
+        // Show a user-friendly error message
+        toast.error(errorMessage);
+        setModerationError(errorMessage);
+        setModerationReason(errorReason);
+      } else {
+        toast.error("Failed to post reply");
+        console.error("Error posting reply:", error);
       }
     }
   };
@@ -234,11 +248,7 @@ export default function ConfessionsPage() {
       setReplyingTo(confessionId)
     }
     
-    if (showRepliesFor === confessionId) {
-      setShowRepliesFor(null)
-    } else {
-      setShowRepliesFor(confessionId)
-    }
+    setShowRepliesFor(showRepliesFor === confessionId ? null : confessionId)
   }
   
   // During SSR or loading, show a simple loading message
@@ -294,7 +304,7 @@ export default function ConfessionsPage() {
             {moderationError && (
               <Alert variant="destructive" className="mt-4 bg-red-50 border-red-200">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Moderation Alert</AlertTitle>
+                <AlertTitle>Reply Rejected</AlertTitle>
                 <AlertDescription>
                   {moderationError}
                   {moderationReason && (
