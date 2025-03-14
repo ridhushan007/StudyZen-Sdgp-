@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const confessionSchema = new mongoose.Schema({
   text: {
     type: String,
@@ -13,6 +12,10 @@ const confessionSchema = new mongoose.Schema({
   author: {
     type: String,
     default: null
+  },
+  userId: {
+    type: String,
+    required: true
   },
   likes: {
     type: Number,
@@ -35,5 +38,4 @@ const confessionSchema = new mongoose.Schema({
     default: Date.now
   }
 });
-
 module.exports = mongoose.model('Confession', confessionSchema);
