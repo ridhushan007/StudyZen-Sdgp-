@@ -1,4 +1,3 @@
-// services/moderator.js
 const axios = require('axios');
 
 const analyzeText = async (text) => {
@@ -13,17 +12,21 @@ const analyzeText = async (text) => {
         TOXICITY: {},
         INSULT: {},
         THREAT: {},
-        SEXUALLY_EXPLICIT: {}
+        SEXUALLY_EXPLICIT: {},
+        SEVERE_TOXICITY: {},
+        IDENTITY_ATTACK: {}
       }
     });
 
     const scores = response.data.attributeScores;
 
     return {
-      isToxic: scores.TOXICITY.summaryScore.value >= 0.8,
+      isToxic: scores.TOXICITY.summaryScore.value >= 0.7,
       isInsult: scores.INSULT.summaryScore.value >= 0.7,
       isThreat: scores.THREAT.summaryScore.value >= 0.6,
-      isExplicit: scores.SEXUALLY_EXPLICIT.summaryScore.value >= 0.7
+      isExplicit: scores.SEXUALLY_EXPLICIT.summaryScore.value >= 0.7,
+      isSevereToxic: scores.SEVERE_TOXICITY.summaryScore.value >= 0.75,
+      isHateSpeech: scores.IDENTITY_ATTACK.summaryScore.value >= 0.7
     };
   } catch (error) {
     console.error("Error analyzing text:", error);
