@@ -226,9 +226,14 @@ export default function ConfessionsPage() {
   const handleLike = async (id: string) => {
     try {
       await confessionApi.likeConfession(id)
+      socketRef.current?.emit('confessionUpdated', { confessionId: id, type: 'like' }) // Emit updated state for all clients
+      // Update the local state of the confession
+      setConfessions(prevConfessions => prevConfessions.map(confession => 
+        confession._id === id ? { ...confession, likes: confession.likes + 1 } : confession
+      ));
     } catch (error) {
-      toast.error('Failed to like confession')
-      console.error('Error liking confession:', error)
+      toast.error('Failed to like confession');
+      console.error('Error liking confession:', error);
     }
   }
   
