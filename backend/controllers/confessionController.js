@@ -11,9 +11,9 @@ const createConfession = async (req, res, next) => {
     if (!userId) return res.status(400).json({ message: 'User ID is required' });
 
     // Moderate the confession text
-    const { isToxic, isInsult, isThreat, isExplicit } = await analyzeText(text);
+    const { isToxic, isInsult, isThreat, isExplicit, isSevereToxic, isHateSpeech } = await analyzeText(text);
 
-    if (isToxic || isInsult || isThreat || isExplicit) {
+    if (isToxic || isInsult || isThreat || isExplicit || isSevereToxic || isHateSpeech) {
       return res.status(400).json({ message: 'Inappropriate content detected. Please modify your confession.' });
     }
 
@@ -179,11 +179,11 @@ const addReply = async (req, res, next) => {
       return res.status(404).json({ message: 'Confession not found' });
     }
 
-    // Analyze the reply text for harmful content
-    const analysis = await analyzeText(text);
+    // Moderate the reply text
+    const { isToxic, isInsult, isThreat, isExplicit, isSevereToxic, isHateSpeech } = await analyzeText(text);
 
-    if (analysis.toxicity > 0.8) {
-      return res.status(400).json({ message: 'Reply contains inappropriate content' });
+    if (isToxic || isInsult || isThreat || isExplicit || isSevereToxic || isHateSpeech) {
+      return res.status(400).json({ message: 'Reply contains inappropriate content. Please modify your reply.' });
     }
 
     // Save the reply if it passes moderation

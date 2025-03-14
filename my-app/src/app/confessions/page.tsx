@@ -176,6 +176,9 @@ export default function ConfessionsPage() {
   const handleReplySubmit = async (confessionId: string) => {
     if (!replyText.trim()) return;
   
+    setModerationError(null);
+    setModerationReason(null);
+  
     try {
       const replyData = {
         text: replyText,
@@ -184,19 +187,19 @@ export default function ConfessionsPage() {
       };
   
       const response = await confessionApi.addReply(confessionId, replyData);
+  
       if (response.status === 200) {
-        // Emit the new reply to WebSocket for real-time updates
+        // Emit the new reply for real-time updates
         socketRef.current?.emit('newReply', { confessionId, reply: response.data });
-        
         setReplyText("");
         toast.success("Reply posted successfully!");
       }
     } catch (error: any) {
       if (error.response && error.response.data) {
+        // Handle moderation errors for replies
         const errorMessage = error.response.data.message || "Failed to post reply";
         const errorReason = error.response.data.reason || "Inappropriate content";
   
-        // Show a user-friendly error message
         toast.error(errorMessage);
         setModerationError(errorMessage);
         setModerationReason(errorReason);
@@ -206,6 +209,7 @@ export default function ConfessionsPage() {
       }
     }
   };
+  
   
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value
@@ -409,6 +413,21 @@ export default function ConfessionsPage() {
                       >
                         Submit Reply
                       </Button>
+                      {moderationError && (
+                        <Alert variant="destructive" className="mt-4 bg-red-50 border-red-200">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertTitle>Reply Rejected</AlertTitle>
+                          <AlertDescription>
+                            {moderationError}
+                            {moderationReason && (
+                              <div className="mt-2 text-sm opacity-80">
+                                Reason: {moderationReason}
+                              </div>
+                            )}
+                          </AlertDescription>
+                        </Alert>
+                      )}
+
                     </div>
                   </div>
                 )}
