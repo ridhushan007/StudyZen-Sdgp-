@@ -146,7 +146,7 @@ export default function ConfessionsPage() {
     e.preventDefault();
     setModerationError(null);
     setModerationReason(null);
-    
+  
     if (newConfession.trim()) {
       try {
         const newConfessionData = {
@@ -155,16 +155,15 @@ export default function ConfessionsPage() {
           author: isAnonymous ? null : currentUser
         };
         const response = await confessionApi.createConfession(newConfessionData);
-        
+  
         // Emit the new confession to WebSocket for others to see
-        socketRef.current?.emit('newConfession', response.data);
-        
+        socketRef.current?.emit('newConfession', response.data); // Emit to update all clients
+  
         setNewConfession("");
         setCharactersRemaining(500);
         toast.success('Confession posted successfully!');
       } catch (error: any) {
         if (error.response && error.response.data) {
-          // Handle moderation errors
           setModerationError(error.response.data.message || 'Failed to post confession');
           setModerationReason(error.response.data.reason || null);
           toast.error('Content moderation issue');
@@ -175,6 +174,7 @@ export default function ConfessionsPage() {
       }
     }
   };
+  
   
   const handleReplySubmit = async (confessionId: string) => {
     if (!replyText.trim()) return;
