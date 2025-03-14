@@ -240,9 +240,14 @@ export default function ConfessionsPage() {
   const handleDislike = async (id: string) => {
     try {
       await confessionApi.dislikeConfession(id)
+      socketRef.current?.emit('confessionUpdated', { confessionId: id, type: 'dislike' }) // Emit updated state for all clients
+      // Update the local state of the confession
+      setConfessions(prevConfessions => prevConfessions.map(confession => 
+        confession._id === id ? { ...confession, dislikes: confession.dislikes + 1 } : confession
+      ));
     } catch (error) {
-      toast.error('Failed to dislike confession')
-      console.error('Error disliking confession:', error)
+      toast.error('Failed to dislike confession');
+      console.error('Error disliking confession:', error);
     }
   }
   
