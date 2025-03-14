@@ -91,18 +91,19 @@ export default function ConfessionsPage() {
       console.log('Connected to WebSocket server')
     })
     
+  
     socket.on('newConfession', (confession: Confession) => {
-      setConfessions(prevConfessions => [confession, ...prevConfessions]) // Add new confession to the top
-    })
-    
+      setConfessions(prevConfessions => [confession, ...prevConfessions]); // Add new confession to the top
+    });
+  
     socket.on('confessionUpdated', (updatedConfession: Confession) => {
       setConfessions(prevConfessions => 
         prevConfessions.map(confession => 
           confession._id === updatedConfession._id ? updatedConfession : confession
         )
-      )
-    })
-    
+      );
+    });
+  
     socket.on('newReply', ({ confessionId, reply }: { confessionId: string, reply: Reply }) => {
       setConfessions(prevConfessions => 
         prevConfessions.map(confession => {
@@ -110,11 +111,11 @@ export default function ConfessionsPage() {
             return {
               ...confession,
               replies: [...confession.replies, reply]
-            }
+            };
           }
-          return confession
+          return confession;
         })
-      )
+      );
     })
     
     // Load initial confessions
@@ -122,10 +123,10 @@ export default function ConfessionsPage() {
     
     return () => {
       if (socketRef.current) {
-        socketRef.current.disconnect()
+        socketRef.current.disconnect();
       }
-    }
-  }, [isClient])
+    };
+  }, [isClient]);
   
   const loadConfessions = async () => {
     try {
