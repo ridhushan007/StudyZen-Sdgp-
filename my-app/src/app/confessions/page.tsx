@@ -57,6 +57,9 @@ export default function ConfessionsPage() {
   const [isClient, setIsClient] = useState(false)
   const [moderationError, setModerationError] = useState<string | null>(null);
   const [moderationReason, setModerationReason] = useState<string | null>(null);
+  const [replyModerationError, setReplyModerationError] = useState<string | null>(null);
+  const [replyModerationReason, setReplyModerationReason] = useState<string | null>(null);
+
 
   
   // useEffect for set client-side state
@@ -176,8 +179,8 @@ export default function ConfessionsPage() {
   const handleReplySubmit = async (confessionId: string) => {
     if (!replyText.trim()) return;
   
-    setModerationError(null);
-    setModerationReason(null);
+    setReplyModerationError(null);
+    setReplyModerationReason(null);
   
     try {
       const replyData = {
@@ -201,14 +204,15 @@ export default function ConfessionsPage() {
         const errorReason = error.response.data.reason || "Inappropriate content";
   
         toast.error(errorMessage);
-        setModerationError(errorMessage);
-        setModerationReason(errorReason);
+        setReplyModerationError(errorMessage);
+        setReplyModerationReason(errorReason);
       } else {
         toast.error("Failed to post reply");
         console.error("Error posting reply:", error);
       }
     }
   };
+  
   
   
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -384,48 +388,45 @@ export default function ConfessionsPage() {
                 {replyingTo === confession._id && (
                   <div className="mt-4 pl-4 border-l-2 border-blue-200">
                     <div className="mb-4">
-                      <Textarea
-                        placeholder="Write your reply..."
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        className="min-h-[80px] border-blue-200 focus:border-blue-400 focus:ring-blue-300"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
+                    <Textarea
+                      placeholder="Add a reply..."
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      className="min-h-[100px] border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+                    />
+                    <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center space-x-2">
                         <Switch
                           checked={isReplyAnonymous}
                           onCheckedChange={setIsReplyAnonymous}
-                          id={`reply-anonymous-${confession._id}`}
+                          id="reply-anonymous"
                           className="data-[state=checked]:bg-blue-600"
                         />
                         <label
-                          htmlFor={`reply-anonymous-${confession._id}`}
-                          className="text-sm font-medium text-blue-800"
+                          htmlFor="reply-anonymous"
+                          className="text-sm font-medium text-blue-800 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          Reply Anonymously
+                          Submit Anonymously
                         </label>
                       </div>
-                      <Button
-                        onClick={() => handleReplySubmit(confession._id)}
-                        size="sm"
-                        className="bg-blue-700 hover:bg-blue-800"
-                      >
+                      <Button onClick={() => handleReplySubmit(confession._id)} className="bg-blue-700 hover:bg-blue-800">
                         Submit Reply
                       </Button>
-                      {moderationError && (
-                        <Alert variant="destructive" className="mt-4 bg-red-50 border-red-200">
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertTitle>Reply Rejected</AlertTitle>
-                          <AlertDescription>
-                            {moderationError}
-                            {moderationReason && (
-                              <div className="mt-2 text-sm opacity-80">
-                                Reason: {moderationReason}
-                              </div>
-                            )}
-                          </AlertDescription>
-                        </Alert>
+                    </div>
+                    
+                    {replyModerationError && (
+                      <Alert variant="destructive" className="mt-4 bg-red-50 border-red-200">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Reply Rejected</AlertTitle>
+                        <AlertDescription>
+                          {replyModerationError}
+                          {replyModerationReason && (
+                            <div className="mt-2 text-sm opacity-80">
+                              Reason: {replyModerationReason}
+                            </div>
+                          )}
+                        </AlertDescription>
+                      </Alert>
                       )}
 
                     </div>
