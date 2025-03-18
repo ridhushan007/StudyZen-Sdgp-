@@ -7,6 +7,7 @@ const { Server } = require('socket.io'); // Standardizing import
 const connectDB = require('./config/db');
 const confessionRoutes = require('./routes/confessionRoutes');
 const journalRoutes = require('./routes/journalRoutes'); // Ensure journal routes are included
+const quizRoutes = require('./routes/quizRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -46,6 +47,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/confessions', confessionRoutes);
 app.use('/api/journal-entries', journalRoutes); // Keep journal API routes
+app.use('/api/quiz', quizRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
