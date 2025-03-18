@@ -4,6 +4,7 @@ const cors = require('cors');
 const http = require('http');
 const connectDB = require('./config/db');
 const confessionRoutes = require('./routes/confessionRoutes');
+const quizRoutes = require('./routes/quiz/route');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/confessions', confessionRoutes);
+app.use('/api/quiz', quizRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
