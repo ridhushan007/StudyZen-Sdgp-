@@ -42,6 +42,11 @@ const mainNavItems = [
     label: "Confessions",
     href: "/confessions",
   },
+  {
+    icon: "/console.png", // Updated to use the local PNG file from the public folder
+    label: "Games",
+    href: "/games",
+  },
 ];
 
 const bottomNavItems = [
@@ -103,7 +108,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "border-r border-blue-700 bg-blue-800 font-mono relative overflow-hidden transition-all duration-300 ease-in-out",
+        "border-r border-blue-600 bg-blue-700 font-mono relative overflow-hidden transition-all duration-300 ease-in-out",
         isCollapsed ? "w-20" : "w-64"
       )}
     >
@@ -124,7 +129,7 @@ export function Sidebar() {
         }
       `}</style>
       <div className="flex flex-col h-full">
-        <div className="flex items-center justify-between p-4 border-b border-blue-700">
+        <div className="flex items-center justify-between p-4 border-b border-blue-600">
           <Link className={cn("flex items-center", isCollapsed ? "justify-center" : "")} href="#">
             <div className="relative w-10 h-10 mr-2">
               {!imageError ? (
@@ -165,7 +170,7 @@ export function Sidebar() {
         </div>
         <nav className="flex flex-col justify-between flex-grow py-4 overflow-y-auto">
           <div className="space-y-1">{renderNavItems(mainNavItems)}</div>
-          <div className="mt-auto pt-4 border-t border-blue-700">{renderNavItems(bottomNavItems)}</div>
+          <div className="mt-auto pt-4 border-t border-blue-600">{renderNavItems(bottomNavItems)}</div>
         </nav>
       </div>
 
