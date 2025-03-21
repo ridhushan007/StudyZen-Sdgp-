@@ -93,6 +93,47 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                  <FaBook className="text-primary-500" />
+                </div>
+                <h3 className="text-lg font-semibold">Courses</h3>
+              </div>
+              <p className="text-gray-600 mb-4">View your enrolled courses and materials</p>
+              <button className="w-full py-2 bg-primary-50 text-primary-600 rounded-lg font-medium hover:bg-primary-100 transition duration-200">
+                View Courses
+              </button>
+            </div>
+  
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                  <FaCalendarAlt className="text-primary-500" />
+                </div>
+                <h3 className="text-lg font-semibold">Schedule</h3>
+              </div>
+              <p className="text-gray-600 mb-4">Check your class schedule and important dates</p>
+              <button className="w-full py-2 bg-primary-50 text-primary-600 rounded-lg font-medium hover:bg-primary-100 transition duration-200">
+                View Schedule
+              </button>
+            </div>
+  
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                  <FaClipboardList className="text-primary-500" />
+                </div>
+                <h3 className="text-lg font-semibold">Grades</h3>
+              </div>
+              <p className="text-gray-600 mb-4">Access your academic performance and grades</p>
+              <button className="w-full py-2 bg-primary-50 text-primary-600 rounded-lg font-medium hover:bg-primary-100 transition duration-200">
+                View Grades
+              </button>
+            </div>
+          </div>
   
           
         </main>
@@ -106,4 +147,4 @@ export default function Dashboard() {
 
 
 
-}
+
