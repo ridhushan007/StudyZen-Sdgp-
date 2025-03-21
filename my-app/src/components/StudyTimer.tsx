@@ -35,3 +35,22 @@ const StudyTimer = ({ userId }: { userId: string }) => {
   const handleStop = async () => {
     setIsRunning(false);
     setLastStudyTime(time);
+    // Save study time to the backend
+    try {
+        const response = await fetch("/api/study-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, studyTime: time }),
+        });
+  
+        if (response.ok) {
+          console.log("Study time saved successfully");
+        } else {
+          console.error("Failed to save study time");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+  
+      setTime(0); // Reset timer after saving
+    };
