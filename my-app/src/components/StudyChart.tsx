@@ -30,3 +30,4 @@ const StudyChart = ({ userId }: { userId: string }) => {
 };
 
 export default StudyChart;
+
