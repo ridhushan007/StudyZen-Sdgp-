@@ -124,3 +124,29 @@ export default function Dashboard() {
           </Card>
 
           <StudyChart userId={userId} />
+
+          <Card className="p-6 border-blue-200">
+            <div className="flex items-center space-x-2">
+              <BookOpen className="h-5 w-5 text-blue-600" />
+              <h3 className="text-sm font-medium text-blue-800">Quizzes Completed</h3>
+            </div>
+            <div>
+  {error && <p>{error}</p>}  {/* Display error message if there's an error */}
+  {quizCount !== null ? (
+    <p>Quizzes This Week: {quizCount}</p>  // Display the count if available
+  ) : (
+    <p>Loading...</p>  // Show loading text until the data is fetched
+  )}
+</div>
+          </Card>
+
+          </Card>
+          
+          <Card className="p-6 border-blue-200">
+            <div className="flex items-center space-x-2">
+              <Flame className="h-5 w-5 text-blue-600" />
+              <h3 className="text-sm font-medium text-blue-800">Current Streak</h3>
+            </div>
+              <CurrentStreak userId={TEMP_USER_ID} />
+          </Card>
+        </div>
