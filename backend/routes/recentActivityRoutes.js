@@ -29,5 +29,9 @@ async function getRecentActivities(req, res) {
       ];
 
       const sortedActivities = allActivities.sort((a, b) => b.timestamp - a.timestamp);
+
+      const topActivities = sortedActivities.slice(0, 5);
+  
+      console.log("Final Sorted Activities:", topActivities);
   
   
