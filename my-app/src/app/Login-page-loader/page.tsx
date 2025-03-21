@@ -33,7 +33,50 @@ export default function Dashboard() {
       } finally {
         setLoading(false)
       }
-    },
+    }, [router])
+
+    const handleLogout = () => {
+      localStorage.removeItem('token')
+      router.push('/login')
+    }
+  
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      )
+    }
+  
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <header className="bg-primary-600 text-white shadow-md">
+          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 className="text-2xl font-bold">University Student Portal</h1>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-primary-400 flex items-center justify-center">
+                  <FaUser className="text-white" />
+                </div>
+                <span className="ml-2 hidden md:inline">{user?.fullName}</span>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="p-2 rounded-full hover:bg-primary-700 transition duration-200"
+              >
+                <FaSignOutAlt />
+              </button>
+            </div>
+          </div>
+        </header>
+  
+        
+    )
+  }
 
 
 
