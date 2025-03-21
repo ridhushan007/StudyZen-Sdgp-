@@ -134,4 +134,53 @@ const FocusTimer: React.FC = () => {
               )}
             </motion.button>
 
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={resetTimer}
+              className="bg-gray-200 text-gray-700 px-6 py-3 rounded-full flex items-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <RefreshCw size={20} />
+              <span>Reset</span>
+            </motion.button>
+          </div>
+        </div>
+
+        <TabsContent value="pomodoro">
+          <motion.p 
+            className="text-center mt-6 text-gray-600"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            Stay focused for 25 minutes
+          </motion.p>
+        </TabsContent>
+        <TabsContent value="shortBreak">
+          <motion.p 
+            className="text-center mt-6 text-gray-600"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            Take a quick 5-minute break
+          </motion.p>
+        </TabsContent>
+        <TabsContent value="longBreak">
+          <motion.p 
+            className="text-center mt-6 text-gray-600"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            Enjoy a refreshing 15-minute break
+          </motion.p>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default FocusTimer;
+
             
