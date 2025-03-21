@@ -27,3 +27,10 @@ const uri = process.env.MONGO_URI;
         createdAt: { $gte: startOfWeek, $lte: endOfWeek }
       });
       console.log("📊 Quizzes found:", quizzesThisWeek); 
+
+      res.json({ count: quizzesThisWeek });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error retrieving quiz count');
+  }
+});
