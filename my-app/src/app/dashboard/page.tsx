@@ -76,3 +76,13 @@ export default function Dashboard() {
         console.error('Error fetching data:', error);  // Log any errors
       });
   }, []);  // Empty
+
+  const fetchRecentActivities = async () => {
+    try {
+        const response = await fetch('http://localhost:3001/api/recent-activities');
+        const data = await response.json();
+        setRecentActivities(data);
+    } catch (error) {
+        console.error('Error fetching recent activities:', error);
+    }
+  };
