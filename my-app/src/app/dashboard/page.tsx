@@ -10,6 +10,10 @@ import StudyChart from "@/components/StudyChart";
 import  RecentActivity  from '@/components/RecentActivity';
 import CurrentStreak from '@/components/CurrentStreak';
 
+// Adjust based on actual location
+
+
+
 const TEMP_USER_ID = "user123";
 const userId = "user123";
 
@@ -31,6 +35,7 @@ interface ProgressData {
   data: number[];
 }
 
+
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [progress, setProgress] = useState<ProgressData | null>(null);
@@ -39,7 +44,7 @@ export default function Dashboard() {
   //const [quizCount, setQuizCount] = useState<number>(0);
   const [quizCount, setQuizCount] = useState(null);
   const [error, setError] = useState<string | null>(null);
-
+  
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -65,6 +70,8 @@ export default function Dashboard() {
     fetchRecentActivities();
   }, []);
 
+
+  // Fetch quiz count on component mount
   useEffect(() => {
     fetch('/all')  // The proxy will redirect this to http://localhost:3001/api/quizzes/week-count
       .then(response => response.json())
@@ -100,7 +107,7 @@ export default function Dashboard() {
     const secs = seconds % 60;
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
-
+  
   return (
     <div className="min-h-screen bg-blue-50 font-mono">
       <div className="max-w-4xl mx-auto relative z-10 p-8 space-y-8">
@@ -124,7 +131,7 @@ export default function Dashboard() {
           </Card>
 
           <StudyChart userId={userId} />
-
+          
           <Card className="p-6 border-blue-200">
             <div className="flex items-center space-x-2">
               <BookOpen className="h-5 w-5 text-blue-600" />
@@ -139,8 +146,6 @@ export default function Dashboard() {
   )}
 </div>
           </Card>
-
-          </Card>
           
           <Card className="p-6 border-blue-200">
             <div className="flex items-center space-x-2">
@@ -150,6 +155,7 @@ export default function Dashboard() {
               <CurrentStreak userId={TEMP_USER_ID} />
           </Card>
         </div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <Card className="col-span-2 p-6 border-blue-200">
             <h2 className="text-xl font-semibold mb-4 text-blue-900">Weekly Progress</h2>
@@ -174,7 +180,7 @@ export default function Dashboard() {
               )}
             </div>
           </Card>
-
+          
           <Card className="p-6 border-blue-200">
             <h2 className="text-xl font-semibold mb-4 text-blue-900">Recent Activity</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -198,4 +204,3 @@ export default function Dashboard() {
       
   );
 }
-
