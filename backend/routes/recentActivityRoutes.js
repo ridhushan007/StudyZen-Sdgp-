@@ -14,5 +14,12 @@ async function getRecentActivities(req, res) {
         }
     
         const db = client.db('test');
+
+        // Fetch recent activities from all collections
+      const [journals, quizzes, confessions] = await Promise.all([
+        db.collection('journals').find().sort({ timestamp: -1 }).limit(5).toArray(),
+        db.collection('quizzes').find().sort({ timestamp: -1 }).limit(5).toArray(),
+        db.collection('confessions').find().sort({ timestamp: -1 }).limit(5).toArray(),
+      ]);
   
   
