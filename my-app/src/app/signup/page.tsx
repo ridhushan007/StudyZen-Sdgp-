@@ -166,6 +166,26 @@ export default function Signup() {
                 />
               </div>
 
+              <div className="flex items-center">
+                <input
+                  id="terms"
+                  name="terms"
+                  type="checkbox"
+                  required
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                />
+                <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
+                  I agree to the{' '}
+                  <a href="#" className="text-primary-500 hover:text-primary-700 font-medium">
+                    Terms of Service
+                  </a>{' '}
+                  and{' '}
+                  <a href="#" className="text-primary-500 hover:text-primary-700 font-medium">
+                    Privacy Policy
+                  </a>
+                </label>
+              </div>
+
 
 
 
