@@ -39,3 +39,28 @@ export default function Dashboard() {
   //const [quizCount, setQuizCount] = useState<number>(0);
   const [quizCount, setQuizCount] = useState(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [statsRes, activitiesRes, progressRes] = await Promise.all([
+          axios.get('http://localhost:3001/api/dashboard/stats'),
+          axios.get('http://localhost:3001/api/dashboard/activities'),
+          axios.get('http://localhost:3001/api/dashboard/progress')
+        ]);
+        setStats(statsRes.data);
+        setActivities(activitiesRes.data);
+        setProgress(progressRes.data);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
+  
+
+  
+  useEffect(() => {
+    fetchRecentActivities();
+  }, []);
