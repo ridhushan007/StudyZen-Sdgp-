@@ -23,3 +23,30 @@ export default function Login() {
       [name]: value
     }))
   }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      // Connect to backend API
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email: formData.email,
+        password: formData.password
+      })
+      
+      // Store token in localStorage
+      localStorage.setItem('token', response.data.token)
+      
+      // Redirect to dashboard
+      router.push('/dashboard')
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+}
