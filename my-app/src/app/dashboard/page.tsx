@@ -64,3 +64,15 @@ export default function Dashboard() {
   useEffect(() => {
     fetchRecentActivities();
   }, []);
+
+  useEffect(() => {
+    fetch('/all')  // The proxy will redirect this to http://localhost:3001/api/quizzes/week-count
+      .then(response => response.json())
+      .then(data => {
+        setQuizCount(data.count);  // Update state with the quiz count
+      })
+      .catch(error => {
+        setError('Error fetching data');
+        console.error('Error fetching data:', error);  // Log any errors
+      });
+  }, []);  // Empty
