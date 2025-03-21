@@ -31,3 +31,24 @@ const FocusTimer: React.FC = () => {
       }
     };
   }, [isRunning, timeLeft]);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setIsRunning(false);
+    setTimeLeft(timerConfigs[value as keyof typeof timerConfigs].duration);
+  };
+
+  const toggleTimer = () => {
+    setIsRunning(!isRunning);
+  };
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setTimeLeft(timerConfigs[activeTab as keyof typeof timerConfigs].duration);
+  };
+
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
