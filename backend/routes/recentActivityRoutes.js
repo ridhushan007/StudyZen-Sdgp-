@@ -33,5 +33,16 @@ async function getRecentActivities(req, res) {
       const topActivities = sortedActivities.slice(0, 5);
   
       console.log("Final Sorted Activities:", topActivities);
+
+      res.status(200).json(topActivities);
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+  
+  router.get('/', getRecentActivities);
+  
+  module.exports = router;
   
   
