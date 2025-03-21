@@ -27,4 +27,8 @@ exports.getCurrentStreak = async (req, res) => {
             streakBroken = true;
           }
         }
-    
+        res.json({ streak: currentStreak });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
