@@ -73,6 +73,30 @@ export default function Dashboard() {
             </div>
           </div>
         </header>
+
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-8">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Welcome, {user?.fullName}!</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-500">Student ID</p>
+                <p className="font-medium">{user?.studentId}</p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-500">Email</p>
+                <p className="font-medium">{user?.email}</p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-500">Program</p>
+                <p className="font-medium">Computer Science</p>
+              </div>
+            </div>
+          </div>
+  
+          
+        </main>
+      </div>
   
         
     )
