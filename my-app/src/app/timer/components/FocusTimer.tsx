@@ -111,3 +111,27 @@ const FocusTimer: React.FC = () => {
               </AnimatePresence>
             </div>
           </div>
+
+          <div className="mt-8 flex justify-center space-x-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleTimer}
+              className={`${
+                isRunning ? 'bg-orange-500' : 'bg-primary'
+              } text-white px-6 py-3 rounded-full flex items-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300`}
+            >
+              {isRunning ? (
+                <>
+                  <Pause size={20} />
+                  <span>Pause</span>
+                </>
+              ) : (
+                <>
+                  <Play size={20} />
+                  <span>Start</span>
+                </>
+              )}
+            </motion.button>
+
+            
