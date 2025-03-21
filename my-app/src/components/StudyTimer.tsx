@@ -27,3 +27,11 @@ const StudyTimer = ({ userId }: { userId: string }) => {
     const secs = seconds % 60;
     return `${hours}h ${minutes}m ${secs}s`;
   };
+
+  const handleStart = () => {
+    setIsRunning(true);
+  };
+
+  const handleStop = async () => {
+    setIsRunning(false);
+    setLastStudyTime(time);
