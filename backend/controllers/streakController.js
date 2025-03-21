@@ -19,3 +19,12 @@ exports.getCurrentStreak = async (req, res) => {
             $lte: dayEnd
           }
         });
+
+        if (hasActivity) {
+            currentStreak++;
+            currentDate = subDays(currentDate, 1);
+          } else {
+            streakBroken = true;
+          }
+        }
+    
