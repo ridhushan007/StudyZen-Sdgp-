@@ -9,26 +9,27 @@ exports.getCurrentStreak = async (req, res) => {
     let streakBroken = false;
 
     while (!streakBroken) {
-        const dayStart = startOfDay(currentDate);
-        const dayEnd = endOfDay(currentDate);
-  
-        const hasActivity = await UserActivity.findOne({
-          userId,
-          timestamp: {
-            $gte: dayStart,
-            $lte: dayEnd
-          }
-        });
+      const dayStart = startOfDay(currentDate);
+      const dayEnd = endOfDay(currentDate);
 
-        if (hasActivity) {
-            currentStreak++;
-            currentDate = subDays(currentDate, 1);
-          } else {
-            streakBroken = true;
-          }
+      const hasActivity = await UserActivity.findOne({
+        userId,
+        timestamp: {
+          $gte: dayStart,
+          $lte: dayEnd
         }
-        res.json({ streak: currentStreak });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+      });
+
+      if (hasActivity) {
+        currentStreak++;
+        currentDate = subDays(currentDate, 1);
+      } else {
+        streakBroken = true;
+      }
     }
-  };
+
+    res.json({ streak: currentStreak });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
