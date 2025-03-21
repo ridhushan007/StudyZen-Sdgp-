@@ -86,3 +86,10 @@ export default function Dashboard() {
         console.error('Error fetching recent activities:', error);
     }
   };
+
+  if (!stats) return <div className="min-h-screen bg-blue-50 font-mono flex items-center justify-center text-blue-800">Loading...</div>;
+
+  const chartData = progress?.labels.map((label, index) => ({
+    name: label,
+    hours: progress.data[index],
+  }));
