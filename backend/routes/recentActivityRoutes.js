@@ -27,5 +27,7 @@ async function getRecentActivities(req, res) {
         ...quizzes.map(q => ({ ...q, type: 'quiz', timestamp: new Date(q.timestamp) })),
         ...confessions.map(c => ({ ...c, type: 'confession', timestamp: new Date(c.timestamp) })),
       ];
+
+      const sortedActivities = allActivities.sort((a, b) => b.timestamp - a.timestamp);
   
   
