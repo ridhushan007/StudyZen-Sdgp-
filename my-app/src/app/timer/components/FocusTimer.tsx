@@ -78,3 +78,36 @@ const FocusTimer: React.FC = () => {
             Long Break
           </TabsTrigger>
         </TabsList>
+
+        <div className="relative">
+          <div className="w-64 h-64 mx-auto relative">
+            {/* Circular Progress Background */}
+            <div className="absolute inset-0 rounded-full border-8 border-gray-100" />
+            
+            {/* Animated Progress Circle */}
+            <motion.div
+              className="absolute inset-0"
+              style={{
+                background: `conic-gradient(${timerConfigs[activeTab as keyof typeof timerConfigs].color} ${progress}%, transparent 0)`,
+                borderRadius: '100%',
+              }}
+              initial={{ rotate: 0 }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            />
+
+            {/* Timer Display */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={timeLeft}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="text-5xl font-bold"
+                >
+                  {formatTime(timeLeft)}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
