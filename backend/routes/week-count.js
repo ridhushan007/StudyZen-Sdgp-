@@ -34,3 +34,16 @@ const uri = process.env.MONGO_URI;
     res.status(500).send('Error retrieving quiz count');
   }
 });
+router.get('/api/quizzes/all', async (req, res) => {
+    try {
+      const allQuizzes = await Quiz.find();  // Fetch all quizzes
+      res.json(allQuizzes);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+  
+  
+  module.exports = router;
+  
