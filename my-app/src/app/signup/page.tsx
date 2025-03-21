@@ -186,7 +186,31 @@ export default function Signup() {
                 </label>
               </div>
 
+              <button
+                type="submit"
+                className="w-full bg-primary-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-opacity-50"
+                disabled={loading}
+              >
+                {loading ? 'Creating Account...' : 'Sign Up'}
+              </button>
+            </div>
+          </form>
 
-
-
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{' '}
+              <Link href="/login" className="text-primary-500 hover:text-primary-700 font-medium transition duration-200">
+                Log In
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
+
+
+
+
+
