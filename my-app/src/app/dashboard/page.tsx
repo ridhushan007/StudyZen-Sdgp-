@@ -100,3 +100,25 @@ export default function Dashboard() {
     const secs = seconds % 60;
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
+
+  return (
+    <div className="min-h-screen bg-blue-50 font-mono">
+      <div className="max-w-4xl mx-auto relative z-10 p-8 space-y-8">
+        <h1 className="text-4xl font-bold text-blue-900">Welcome to StudyZen!</h1>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <Card className="p-6 border-blue-200">
+            <div className="flex items-center space-x-2">
+              <Clock className="h-5 w-5 text-blue-600" />
+              <h3 className="text-sm font-medium text-blue-800">Study Timer</h3>
+            </div>
+            <br />
+            <div className="flex justify-center">
+      <StudyTimer userId={userId} />
+    </div>
+            <br />
+      
+
+            
+              
+          </Card>
