@@ -21,5 +21,11 @@ async function getRecentActivities(req, res) {
         db.collection('quizzes').find().sort({ timestamp: -1 }).limit(5).toArray(),
         db.collection('confessions').find().sort({ timestamp: -1 }).limit(5).toArray(),
       ]);
+
+      const allActivities = [
+        ...journals.map(j => ({ ...j, type: 'journal', timestamp: new Date(j.timestamp) })),
+        ...quizzes.map(q => ({ ...q, type: 'quiz', timestamp: new Date(q.timestamp) })),
+        ...confessions.map(c => ({ ...c, type: 'confession', timestamp: new Date(c.timestamp) })),
+      ];
   
   
