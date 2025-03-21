@@ -30,3 +30,29 @@ export default function RecentActivity() {
       const interval = setInterval(fetchActivities, 5 * 60 * 1000); // Refresh every 5 minutes
     return () => clearInterval(interval);
   }, []);
+
+  // Sort the activities based on the timestamp (date and time)
+  const sortedActivities = [...activities].sort((a, b) => {
+    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(); // Sort by date and time (descending)
+  });
+
+  return (
+    <div>
+      {activities.length === 0 ? (
+        <p>No recent activity found.</p>
+      ) : (
+        <ul>
+          {sortedActivities.map((activity) => (
+            <li key={activity._id}>
+              <strong>{activity.type.toUpperCase()}:</strong>
+              <span style={{ fontSize: '12px' }}>{activity.title}</span> <br />
+              <small>{new Date(activity.timestamp).toLocaleString()}</small><br />
+              <hr />
+              <br />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
