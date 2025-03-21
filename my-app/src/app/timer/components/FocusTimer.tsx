@@ -52,3 +52,29 @@ const FocusTimer: React.FC = () => {
     const remainingSeconds = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
+
+  const progress = (timeLeft / timerConfigs[activeTab as keyof typeof timerConfigs].duration) * 100;
+
+  return (
+    <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md mx-auto">
+      <motion.h2 
+        className="text-3xl font-bold text-primary mb-6 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        Focus Timer
+      </motion.h2>
+      
+      <Tabs defaultValue="pomodoro" onValueChange={handleTabChange}>
+        <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsTrigger value="pomodoro" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+            Pomodoro
+          </TabsTrigger>
+          <TabsTrigger value="shortBreak" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
+            Short Break
+          </TabsTrigger>
+          <TabsTrigger value="longBreak" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+            Long Break
+          </TabsTrigger>
+        </TabsList>
