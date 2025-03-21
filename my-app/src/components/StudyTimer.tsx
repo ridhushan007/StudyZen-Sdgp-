@@ -74,3 +74,13 @@ const StudyTimer = ({ userId }: { userId: string }) => {
         Stop Learning
       </button>
     </div>
+
+    {/* Conditionally render last study time */}
+    {lastStudyTime !== null && (
+        <p className="mt-4">Last studied for: {formatTime(lastStudyTime)}</p>
+      )}
+    </div>
+  );
+};
+
+export default StudyTimer;
