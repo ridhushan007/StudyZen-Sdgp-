@@ -15,3 +15,19 @@ const FocusTimer: React.FC = () => {
     shortBreak: { duration: 5 * 60, label: 'Short Break', color: 'bg-green-500' },
     longBreak: { duration: 15 * 60, label: 'Long Break', color: 'bg-blue-500' },
   };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (isRunning && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isRunning, timeLeft]);
