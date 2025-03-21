@@ -5,4 +5,5 @@ const studySessionSchema = new mongoose.Schema({
   date: String, // Format: YYYY-MM-DD
   totalStudyTime: Number,
 });
+
 module.exports = mongoose.model("StudySession", studySessionSchema); // CommonJS export
