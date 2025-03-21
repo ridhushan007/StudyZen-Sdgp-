@@ -25,3 +25,26 @@ export default function Signup() {
       [name]: value
     }))
   }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    // Validate email is university email
+    if (!formData.email.endsWith('.edu')) {
+      setError('Please use your university email address')
+      return
+    }
+
+    setLoading(true)
+
+
+    
+
+}
