@@ -23,3 +23,16 @@ export default function CurrentStreak({ userId }: CurrentStreakProps) {
 
     fetchStreak();
   }, [userId]);
+
+  return (
+    <Card>
+      
+      <CardContent>
+        <div className="flex space-x-4 text-2xl font-bold text-blue-900 mt-2">{streak} days</div>
+        <p className="text-xs font-medium text-blue-500">
+          Keep the streak going!
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
