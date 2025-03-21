@@ -28,7 +28,5 @@ export default function RecentActivity() {
   
       fetchActivities();
       const interval = setInterval(fetchActivities, 5 * 60 * 1000); // Refresh every 5 minutes
-      return () => clearInterval(interval);
-    }, []);
-  
-    if (loading) return <p>Loading...</p>;
+    return () => clearInterval(interval);
+  }, []);
