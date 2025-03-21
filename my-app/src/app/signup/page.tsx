@@ -44,7 +44,7 @@ export default function Signup() {
 
     setLoading(true)
 
-     try {
+    try {
       // Connect to backend API
       const response = await axios.post('http://localhost:5000/api/auth/register', {
         fullName: formData.fullName,
@@ -74,7 +74,6 @@ export default function Signup() {
           <p className="text-gray-600 mt-1">Your Personal Progress Companion</p>
         </div>
 
-        
         <div className="bg-white rounded-lg shadow-xl p-8">
           <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
 
@@ -209,8 +208,3 @@ export default function Signup() {
     </div>
   )
 }
-
-
-
-
-
