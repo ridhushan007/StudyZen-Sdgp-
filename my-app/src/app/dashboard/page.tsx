@@ -122,3 +122,5 @@ export default function Dashboard() {
             
               
           </Card>
+
+          <StudyChart userId={userId} />
