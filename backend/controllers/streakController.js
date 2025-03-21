@@ -7,3 +7,15 @@ exports.getCurrentStreak = async (req, res) => {
     let currentStreak = 0;
     let currentDate = new Date();
     let streakBroken = false;
+
+    while (!streakBroken) {
+        const dayStart = startOfDay(currentDate);
+        const dayEnd = endOfDay(currentDate);
+  
+        const hasActivity = await UserActivity.findOne({
+          userId,
+          timestamp: {
+            $gte: dayStart,
+            $lte: dayEnd
+          }
+        });
