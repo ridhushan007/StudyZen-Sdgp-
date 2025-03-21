@@ -47,6 +47,7 @@ export default function Login() {
       setLoading(false)
     }
   }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-blue-50">
       <div className="w-full max-w-md">
@@ -68,8 +69,7 @@ export default function Login() {
             </div>
           )}
 
-          
-<form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <div className="space-y-5">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -103,7 +103,6 @@ export default function Login() {
                 />
               </div>
 
-              
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FaLock className="text-primary-400" />
@@ -135,7 +134,3 @@ export default function Login() {
     </div>
   )
 }
-
-
-
-
