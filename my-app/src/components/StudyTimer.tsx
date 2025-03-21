@@ -34,49 +34,54 @@ const StudyTimer = ({ userId }: { userId: string }) => {
 
   const handleStop = async () => {
     setIsRunning(false);
-    setLastStudyTime(time);
+    setLastStudyTime(time); // Update lastStudyTime when stopped
+
     // Save study time to the backend
     try {
-        const response = await fetch("/api/study-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, studyTime: time }),
-        });
-  
-        if (response.ok) {
-          console.log("Study time saved successfully");
-        } else {
-          console.error("Failed to save study time");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-  
-      setTime(0); // Reset timer after saving
-    };
-    return (
-        <div className="flex flex-col items-center space-y-2">
-          <p className="text-xl font-semibold mb-4 text-blue-900">{formatTime(time)}</p>
-      
-          <div className="flex flex-col items-center space-y-2">
-      <button 
-        onClick={handleStart} 
-        disabled={isRunning} 
-        className="bg-blue-500 text-white w-24 h-10 rounded"
-      >
-        Start Learning
-      </button>
-      <button 
-        onClick={handleStop} 
-        disabled={!isRunning} 
-        className="bg-red-500 text-white w-24 h-10 rounded"
-      >
-        Stop Learning
-      </button>
-    </div>
+      const response = await fetch("/api/study-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, studyTime: time }),
+      });
 
-    {/* Conditionally render last study time */}
-    {lastStudyTime !== null && (
+      if (response.ok) {
+        console.log("Study time saved successfully");
+      } else {
+        console.error("Failed to save study time");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    setTime(0); // Reset timer after saving
+  };
+
+  return (
+    <div className="flex flex-col items-center space-y-2">
+      <p className="text-xl font-semibold mb-4 text-blue-900">{formatTime(time)}</p>
+  
+      <div className="flex flex-col items-center space-y-2">
+  <button 
+    onClick={handleStart} 
+    disabled={isRunning} 
+    className="bg-blue-500 text-white w-24 h-10 rounded"
+  >
+    Start Learning
+  </button>
+  <button 
+    onClick={handleStop} 
+    disabled={!isRunning} 
+    className="bg-red-500 text-white w-24 h-10 rounded"
+  >
+    Stop Learning
+  </button>
+</div>
+
+
+
+  
+      {/* Conditionally render last study time */}
+      {lastStudyTime !== null && (
         <p className="mt-4">Last studied for: {formatTime(lastStudyTime)}</p>
       )}
     </div>
