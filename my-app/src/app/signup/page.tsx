@@ -44,7 +44,37 @@ export default function Signup() {
 
     setLoading(true)
 
+     try {
+      // Connect to backend API
+      const response = await axios.post('http://localhost:5000/api/auth/register', {
+        fullName: formData.fullName,
+        email: formData.email,
+        studentId: formData.studentId,
+        password: formData.password
+      })
+      
+      // Redirect to login page after successful registration
+      router.push('/login?registered=true')
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Registration failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
-    
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-blue-50">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-6">
+          <div className="flex justify-center items-center gap-2 mb-2">
+            <FaUniversity className="text-primary-600 text-3xl" />
+            <FaUser className="text-primary-600 text-2xl" />
+          </div>
+          <h1 className="text-3xl font-bold text-primary-600">StudyZen</h1>
+          <p className="text-gray-600 mt-1">Your Personal Progress Companion</p>
+        </div>
+
+
+
 
 }
