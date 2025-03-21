@@ -22,3 +22,8 @@ const uri = process.env.MONGO_URI;
       endOfWeek.setDate(startOfWeek.getDate() + 6); // Set to end of the week (Saturday)
       endOfWeek.setHours(23, 59, 59, 999);
       console.log("🔍 Querying database for quizzes between:", startOfWeek, "and", endOfWeek); // Debug log
+
+      const quizzesThisWeek = await Quiz.countDocuments({
+        createdAt: { $gte: startOfWeek, $lte: endOfWeek }
+      });
+      console.log("📊 Quizzes found:", quizzesThisWeek); 
