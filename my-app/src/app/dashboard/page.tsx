@@ -174,3 +174,27 @@ export default function Dashboard() {
               )}
             </div>
           </Card>
+
+          <Card className="p-6 border-blue-200">
+            <h2 className="text-xl font-semibold mb-4 text-blue-900">Recent Activity</h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        
+        
+            </div>
+      
+      
+            <div>
+          <RecentActivity />
+        </div>
+          </Card>
+        </div>
+        
+        
+      </div>
+    </div>
+
+  
+    
+      
+  );
+}
