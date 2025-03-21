@@ -3,3 +3,5 @@ const router = express.Router();
 const streakController = require('../controllers/streakController');
 
 router.get('/:userId', streakController.getCurrentStreak);
+
+module.exports = router;
