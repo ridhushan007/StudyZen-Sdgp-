@@ -47,6 +47,28 @@ export default function Login() {
       setLoading(false)
     }
   }
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-blue-50">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-6">
+          <div className="flex justify-center items-center gap-2 mb-2">
+            <FaUniversity className="text-primary-600 text-3xl" />
+            <FaUser className="text-primary-600 text-2xl" />
+          </div>
+          <h1 className="text-3xl font-bold text-primary-600">StudyZen</h1>
+          <p className="text-gray-600 mt-1">Your Personal Progress Companion</p>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-xl p-8">
+          <h2 className="text-2xl font-bold text-center mb-6">User Login</h2>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+
 
 
 }
