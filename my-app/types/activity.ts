@@ -6,9 +6,7 @@ export interface Activity {
     timestamp: Date;
     userId: string;
   }
-
+  
   export interface RecentActivityProps {
     activities: Activity[];
   }
-  
-  
