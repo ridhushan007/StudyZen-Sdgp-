@@ -30,3 +30,12 @@ interface ProgressData {
   labels: string[];
   data: number[];
 }
+
+export default function Dashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [progress, setProgress] = useState<ProgressData | null>(null);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [activities, setActivities] = useState([]);
+  //const [quizCount, setQuizCount] = useState<number>(0);
+  const [quizCount, setQuizCount] = useState(null);
+  const [error, setError] = useState<string | null>(null);
