@@ -150,3 +150,27 @@ export default function Dashboard() {
               <CurrentStreak userId={TEMP_USER_ID} />
           </Card>
         </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Card className="col-span-2 p-6 border-blue-200">
+            <h2 className="text-xl font-semibold mb-4 text-blue-900">Weekly Progress</h2>
+            <div className="h-[300px]">
+              {chartData && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+                    <XAxis dataKey="name" tick={{ fill: '#3b82f6' }} />
+                    <YAxis tick={{ fill: '#3b82f6' }} />
+                    <Tooltip contentStyle={{ backgroundColor: '#eff6ff', borderColor: '#93c5fd', fontFamily: 'monospace' }} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="hours" 
+                      stroke="#2563eb" 
+                      strokeWidth={2}
+                      dot={{ fill: '#1e40af', stroke: '#2563eb', strokeWidth: 2, r: 4 }}
+                      activeDot={{ fill: '#1e40af', stroke: '#2563eb', strokeWidth: 2, r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </Card>
