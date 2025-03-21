@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 
-  activityType: {
-    type: String,
-    enum: ['journal', 'quiz', 'chat', 'confession'],
-    required: true
-  },
+  timestamp: {
+    type: Date,
+    default: Date.now
+  }
+}, { timestamps: true });
