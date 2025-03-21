@@ -54,3 +54,23 @@ const StudyTimer = ({ userId }: { userId: string }) => {
   
       setTime(0); // Reset timer after saving
     };
+    return (
+        <div className="flex flex-col items-center space-y-2">
+          <p className="text-xl font-semibold mb-4 text-blue-900">{formatTime(time)}</p>
+      
+          <div className="flex flex-col items-center space-y-2">
+      <button 
+        onClick={handleStart} 
+        disabled={isRunning} 
+        className="bg-blue-500 text-white w-24 h-10 rounded"
+      >
+        Start Learning
+      </button>
+      <button 
+        onClick={handleStop} 
+        disabled={!isRunning} 
+        className="bg-red-500 text-white w-24 h-10 rounded"
+      >
+        Stop Learning
+      </button>
+    </div>
