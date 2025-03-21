@@ -17,6 +17,24 @@ export default function Dashboard() {
         return
       }
 
+      // Get user data from token
+    try {
+        // In a real app, you would fetch user data from the server here
+        // For now, we'll just simulate it
+        setUser({
+          fullName: 'John Doe',
+          email: 'john.doe@university.edu',
+          studentId: 'S12345678'
+        })
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+        localStorage.removeItem('token')
+        router.push('/login')
+      } finally {
+        setLoading(false)
+      }
+    },
+
 
 
 
