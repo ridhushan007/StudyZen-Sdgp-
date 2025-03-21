@@ -103,7 +103,39 @@ export default function Login() {
                 />
               </div>
 
+              
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaLock className="text-primary-400" />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  className="w-full px-4 py-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
 
+              <button
+                type="submit"
+                className="w-full bg-primary-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-opacity-50"
+              >
+                {loading ? 'loging in...' : 'Log In'}
+              </button>
+            </div>
+          </form>
 
-
+          
+        </div>
+      </div>
+    </div>
+  )
 }
+
+
+
+
