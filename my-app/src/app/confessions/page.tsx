@@ -59,8 +59,6 @@ export default function ConfessionsPage() {
   const [moderationReason, setModerationReason] = useState<string | null>(null);
   const [replyModerationError, setReplyModerationError] = useState<string | null>(null);
   const [replyModerationReason, setReplyModerationReason] = useState<string | null>(null);
-
-
   
   // useEffect for set client-side state
   useEffect(() => {
@@ -278,21 +276,46 @@ export default function ConfessionsPage() {
     setShowRepliesFor(showRepliesFor === confessionId ? null : confessionId)
   }
   
-  // During SSR or loading, show a simple loading message
+  // During SSR or loading, show a simple loading message with background effects
   if (!isClient || isLoading) {
-    return <div className="bg-blue-50 min-h-screen font-mono">
-      <div className="max-w-4xl mx-auto relative z-10 py-8 px-4">
-        <div className="text-blue-900">Loading confessions...</div>
+    return (
+      <div className="min-h-screen font-mono bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-20">
+          {/* Background pattern */}
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_500px_at_50%_20%,rgba(172,224,249,0.2),transparent)]"></div>
+          <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-blue-300 mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-96 h-96 rounded-full bg-indigo-300 mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        </div>
+        <div className="max-w-4xl mx-auto relative z-10 py-8 px-4 flex items-center justify-center min-h-screen">
+          <div className="text-blue-900 text-xl font-semibold animate-pulse">Loading confessions...</div>
+        </div>
       </div>
-    </div>
+    );
   }
   
   return (
-    <div className="bg-blue-50 min-h-screen font-mono">
+    <div className="min-h-screen font-mono bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 z-0 opacity-30">
+        {/* Animated Floating Circles */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-300 mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute top-3/4 right-1/3 w-80 h-80 rounded-full bg-indigo-300 mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-1/3 left-2/3 w-72 h-72 rounded-full bg-purple-300 mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        
+        {/* Radial Gradient */}
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_800px_at_50%_20%,rgba(172,224,249,0.3),transparent)]"></div>
+        
+        {/* Subtle Grid Pattern */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+      </div>
+      
+      {/* Content */}
       <div className="max-w-4xl mx-auto relative z-10 py-8 px-4">
-        <Card className="mb-8 border-blue-200 shadow-md">
+        <Card className="mb-8 border-blue-200 bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-300 hover:shadow-blue-200/30">
           <CardHeader className="border-b border-blue-100">
-            <CardTitle className="text-blue-900">Public Confessions</CardTitle>
+            <CardTitle className="text-blue-900 flex items-center">
+              <span className="mr-2">📝</span> Public Confessions
+            </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit}>
@@ -301,7 +324,7 @@ export default function ConfessionsPage() {
                   placeholder="Share your thoughts anonymously..."
                   value={newConfession}
                   onChange={handleTextChange}
-                  className="min-h-[120px] border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+                  className="min-h-[120px] border-blue-200 focus:border-blue-400 focus:ring-blue-300 bg-white/90 backdrop-blur-sm transition-all duration-200 focus:shadow-md"
                 />
                 <div className="absolute bottom-2 right-2 text-sm text-blue-400">
                   {charactersRemaining} characters remaining
@@ -322,7 +345,10 @@ export default function ConfessionsPage() {
                     Submit Anonymously
                   </label>
                 </div>
-                <Button type="submit" className="bg-blue-700 hover:bg-blue-800">
+                <Button 
+                  type="submit" 
+                  className="bg-blue-700 hover:bg-blue-800 shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"
+                >
                   Submit Confession
                 </Button>
               </div>
@@ -331,7 +357,7 @@ export default function ConfessionsPage() {
             {moderationError && (
               <Alert variant="destructive" className="mt-4 bg-red-50 border-red-200">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Reply Rejected</AlertTitle>
+                <AlertTitle>Confession Rejected</AlertTitle>
                 <AlertDescription>
                   {moderationError}
                   {moderationReason && (
@@ -342,15 +368,17 @@ export default function ConfessionsPage() {
                 </AlertDescription>
               </Alert>
             )}
-
           </CardContent>
         </Card>
         
-        <h2 className="text-2xl font-semibold mt-8 mb-4 text-blue-900">Recent Confessions</h2>
+        <h2 className="text-2xl font-semibold mt-8 mb-4 text-blue-900 pl-2 border-l-4 border-blue-600">Recent Confessions</h2>
         
         <div className="space-y-4">
-          {confessions && confessions.length > 0 ? confessions.map((confession) => (
-            <Card key={confession._id} className="border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+          {confessions && confessions.length > 0 ? confessions.map((confession, index) => (
+            <Card 
+              key={confession._id} 
+              className={`border-blue-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300 transform hover:-translate-y-1 ${index % 2 === 0 ? 'bg-gradient-to-r from-white/80 to-blue-50/80' : 'bg-gradient-to-r from-white/80 to-indigo-50/80'}`}
+            >
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2 mb-2">
                   {confession.isAnonymous ? (
@@ -369,14 +397,14 @@ export default function ConfessionsPage() {
                   </span>
                 </div>
                 
-                <p className="mb-4 text-blue-900">{confession.text}</p>
+                <p className="mb-4 text-blue-900 bg-blue-50/50 p-3 rounded-md border-l-2 border-blue-300">{confession.text}</p>
                 
                 <div className="flex items-center gap-4">
                   <Button
                     variant={isLikedByUser(confession) ? "default" : "ghost"}
                     size="sm"
                     onClick={() => handleLike(confession._id)}
-                    className={`flex items-center gap-2 ${isLikedByUser(confession) ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-100'}`}
+                    className={`flex items-center gap-2 transition-all duration-200 ${isLikedByUser(confession) ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-100'}`}
                   >
                     <ThumbsUp className="h-4 w-4" />
                     <span>{confession.likes}</span>
@@ -386,7 +414,7 @@ export default function ConfessionsPage() {
                     variant={isDislikedByUser(confession) ? "default" : "ghost"}
                     size="sm"
                     onClick={() => handleDislike(confession._id)}
-                    className={`flex items-center gap-2 ${isDislikedByUser(confession) ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-100'}`}
+                    className={`flex items-center gap-2 transition-all duration-200 ${isDislikedByUser(confession) ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-100'}`}
                   >
                     <ThumbsDown className="h-4 w-4" />
                     <span>{confession.dislikes}</span>
@@ -396,7 +424,7 @@ export default function ConfessionsPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleReplySection(confession._id)}
-                    className="flex items-center gap-2 text-blue-800 hover:text-blue-900 hover:bg-blue-100"
+                    className={`flex items-center gap-2 text-blue-800 hover:text-blue-900 hover:bg-blue-100 transition-all duration-200 ${showRepliesFor === confession._id ? 'bg-blue-100' : ''}`}
                   >
                     <MessageCircle className="h-4 w-4" />
                     <span>Reply{confession.replies && confession.replies.length > 0 ? ` (${confession.replies.length})` : ""}</span>
@@ -405,30 +433,33 @@ export default function ConfessionsPage() {
                 
                 {/* Reply Form */}
                 {replyingTo === confession._id && (
-                  <div className="mt-4 pl-4 border-l-2 border-blue-200">
+                  <div className="mt-4 pl-4 border-l-2 border-blue-200 animate-fadeIn">
                     <div className="mb-4">
                     <Textarea
                       placeholder="Add a reply..."
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
-                      className="min-h-[100px] border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+                      className="min-h-[100px] border-blue-200 focus:border-blue-400 focus:ring-blue-300 bg-white/90 backdrop-blur-sm transition-all duration-200 focus:shadow-md"
                     />
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center space-x-2">
                         <Switch
                           checked={isReplyAnonymous}
                           onCheckedChange={setIsReplyAnonymous}
-                          id="reply-anonymous"
+                          id={`reply-anonymous-${confession._id}`}
                           className="data-[state=checked]:bg-blue-600"
                         />
                         <label
-                          htmlFor="reply-anonymous"
+                          htmlFor={`reply-anonymous-${confession._id}`}
                           className="text-sm font-medium text-blue-800 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           Submit Anonymously
                         </label>
                       </div>
-                      <Button onClick={() => handleReplySubmit(confession._id)} className="bg-blue-700 hover:bg-blue-800">
+                      <Button 
+                        onClick={() => handleReplySubmit(confession._id)} 
+                        className="bg-blue-700 hover:bg-blue-800 shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"
+                      >
                         Submit Reply
                       </Button>
                     </div>
@@ -447,17 +478,16 @@ export default function ConfessionsPage() {
                         </AlertDescription>
                       </Alert>
                       )}
-
                     </div>
                   </div>
                 )}
                 
                 {/* Replies List */}
                 {showRepliesFor === confession._id && confession.replies && confession.replies.length > 0 && (
-                  <div className="mt-4 pl-4 border-l-2 border-blue-200 space-y-3">
+                  <div className="mt-4 pl-4 border-l-2 border-blue-200 space-y-3 animate-fadeIn">
                     <h4 className="font-medium text-sm mb-2 text-blue-800">Replies ({confession.replies.length})</h4>
                     {confession.replies.map((reply) => (
-                      <div key={reply._id} className="bg-blue-50 p-3 rounded-md border border-blue-100">
+                      <div key={reply._id} className="bg-blue-50/70 p-3 rounded-md border border-blue-100 hover:shadow-sm transition-all duration-200 hover:bg-blue-50/90">
                         <div className="flex items-center gap-2 mb-1">
                           {reply.isAnonymous ? (
                             <div className="flex items-center gap-1 text-blue-600">
@@ -482,13 +512,16 @@ export default function ConfessionsPage() {
               </CardContent>
             </Card>
           )) : (
-            <div className="text-center p-6 bg-white rounded-lg shadow border border-blue-100 text-blue-800">
-              No confessions yet. Be the first to share!
+            <div className="text-center p-8 bg-white/80 backdrop-blur-sm rounded-lg shadow border border-blue-100 text-blue-800">
+              <div className="mb-4 text-6xl">💭</div>
+              <h3 className="text-xl font-medium mb-2">No confessions yet</h3>
+              <p>Be the first to share your thoughts!</p>
             </div>
           )}
-          <h2></h2>
         </div>
       </div>
+
+    
     </div>
   )
 }
