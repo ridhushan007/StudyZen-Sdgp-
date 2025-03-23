@@ -1,10 +1,14 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight, BookOpen, PenTool, MessageCircle } from "lucide-react";
+import {
+  BookOpen,
+  PenTool,
+  MessageCircle,
+} from "lucide-react";
 
 // Utility function for merging class names
 function cn(...classes: (string | undefined)[]) {
@@ -43,7 +47,7 @@ const mainNavItems = [
     href: "/confessions",
   },
   {
-    icon: "/console.png", // Updated to use the local PNG file from the public folder
+    icon: "/console.png", // Local file from public folder
     label: "Games",
     href: "/games",
   },
@@ -65,18 +69,11 @@ const bottomNavItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const [imageError, setImageError] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
-  React.useEffect(() => {
-    const link = document.createElement("link");
-    link.href = "https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap";
-    link.rel = "stylesheet";
-    document.head.appendChild(link);
-
-    return () => {
-      document.head.removeChild(link);
-    };
-  }, []);
+  // Auto expand on mouse enter, collapse on mouse leave
+  const handleMouseEnter = () => setIsCollapsed(false);
+  const handleMouseLeave = () => setIsCollapsed(true);
 
   const renderNavItems = (items: typeof mainNavItems) =>
     items.map((item) => (
@@ -85,9 +82,9 @@ export function Sidebar() {
         href={item.href}
         className={cn(
           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-300 ease-in-out",
-          pathname === item.href 
-            ? "bg-blue-700 text-white font-medium shadow-md" 
-            : "text-blue-300 hover:bg-blue-700 hover:text-white",
+          pathname === item.href
+            ? "bg-blue-600 text-white font-medium shadow-md"
+            : "text-blue-200 hover:bg-blue-600 hover:text-white",
           isCollapsed ? "justify-center w-14 mx-auto" : "w-full"
         )}
         title={isCollapsed ? item.label : undefined}
@@ -107,8 +104,10 @@ export function Sidebar() {
 
   return (
     <aside
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className={cn(
-        "border-r border-blue-600 bg-blue-700 font-mono relative overflow-hidden transition-all duration-300 ease-in-out",
+        "border-r border-blue-400 bg-blue-500 font-mono relative overflow-hidden transition-all duration-300 ease-in-out",
         isCollapsed ? "w-20" : "w-64"
       )}
     >
@@ -129,52 +128,25 @@ export function Sidebar() {
         }
       `}</style>
       <div className="flex flex-col h-full">
-        <div className="flex items-center justify-between p-4 border-b border-blue-600">
-          <Link className={cn("flex items-center", isCollapsed ? "justify-center" : "")} href="#">
-            <div className="relative w-10 h-10 mr-2">
-              {!imageError ? (
-                <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/book-Y8AjG7ZMNLHlyI10HWSQ3VLGJLJskX.png"
-                  alt="StudyZen Logo"
-                  width={40}
-                  height={40}
-                  className="object-contain"
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <div className="w-10 h-10 bg-blue-600 flex items-center justify-center rounded-full">
-                  <span className="text-white font-bold text-xl">S</span>
-                </div>
-              )}
-            </div>
-            {!isCollapsed && (
-              <span
-                className="text-2xl font-bold text-white"
-                style={{
-                  fontFamily: "'Fredoka One', cursive",
-                  letterSpacing: "-0.02em",
-                  transform: "rotate(-2deg)",
-                }}
-              >
-                StudyZen
-              </span>
-            )}
+        <div className="flex items-center justify-center p-4 border-b border-blue-400">
+          <Link href="#">
+            <Image
+              src="/logo.png"
+              alt="StudyZen Logo"
+              width={200}
+              height={200}
+              className="object-contain"
+            />
           </Link>
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {isCollapsed ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
-          </button>
         </div>
         <nav className="flex flex-col justify-between flex-grow py-4 overflow-y-auto">
           <div className="space-y-1">{renderNavItems(mainNavItems)}</div>
-          <div className="mt-auto pt-4 border-t border-blue-600">{renderNavItems(bottomNavItems)}</div>
+          <div className="mt-auto pt-4 border-t border-blue-400">
+            {renderNavItems(bottomNavItems)}
+          </div>
         </nav>
       </div>
-
-      {/* Animated background elements */}
+      {/* Optional animated background elements */}
       <div className="absolute top-20 left-4 text-blue-200 opacity-20 animate-float">
         <BookOpen size={48} />
       </div>
