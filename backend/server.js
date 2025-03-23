@@ -1,20 +1,30 @@
-require('dotenv').config();
+require('dotenv').config(); // Load environment variables
 console.log("Google API Key:", process.env.GOOGLE_API_KEY);
+
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
-const { Server } = require('socket.io'); // Standardizing import
+const { Server } = require('socket.io');
 const connectDB = require('./config/db');
+
+// Import routes
+const authRoutes = require('./routes/authRoutes');
 const confessionRoutes = require('./routes/confessionRoutes');
-const journalRoutes = require('./routes/journalRoutes'); // Ensure journal routes are included
+const journalRoutes = require('./routes/journalRoutes');
 const quizRoutes = require('./routes/quizRoutes');
+const progressRoutes = require('./routes/progressRoutes'); // Make sure you have this file
+
+// Error handler middleware
 const errorHandler = require('./middleware/errorHandler');
 
+// Initialize Express and HTTP server
 const app = express();
 const server = http.createServer(app);
+
+// Initialize Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "*", // Adjust if needed
     methods: ["GET", "POST"]
   }
 });
@@ -22,42 +32,51 @@ const io = new Server(server, {
 // Connect to MongoDB
 connectDB();
 
-// Middleware
+// Global Middleware
 app.use(cors());
 app.use(express.json());
 
-// Socket.io connection handling
+// Socket.IO connection handling
 io.on('connection', (socket) => {
-  console.log('New client connected');
-
+  console.log('New client connected:', socket.id);
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    console.log('Client disconnected:', socket.id);
   });
 });
 
-// Attach chat socket handlers
+// Attach any custom Socket.IO logic
 require('./socket/chatSocket')(io);
 
-// Make io accessible to our routes
+// Make io accessible in routes via req.io
 app.use((req, res, next) => {
   req.io = io;
   next();
 });
 
-// Routes
-app.use('/api/confessions', confessionRoutes);
-app.use('/api/journal-entries', journalRoutes); // Keep journal API routes
-app.use('/api/quiz', quizRoutes);
+// =============================
+//            Routes
+// =============================
 
-// Basic route
+// Authentication Routes
+app.use('/api/auth', authRoutes);
+
+// Other API Routes
+app.use('/api/confessions', confessionRoutes);
+app.use('/api/journal-entries', journalRoutes);
+app.use('/api/quiz', quizRoutes);
+app.use('/api/progress', progressRoutes);
+
+// Basic Health Check Route
 app.get('/', (req, res) => {
-  res.send('StudyZen Confessions API is running');
+  res.send('StudyZen API is running');
 });
 
-// Error handling middleware
+// Error Handling Middleware
 app.use(errorHandler);
 
-// Start the server
+// =============================
+//          Start Server
+// =============================
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
