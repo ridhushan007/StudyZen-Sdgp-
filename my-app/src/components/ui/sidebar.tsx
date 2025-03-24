@@ -131,7 +131,7 @@ export function Sidebar() {
         <div className="flex items-center justify-center p-4 border-b border-blue-400">
           <Link href="#">
             <Image
-              src="/logo.png"
+              src="/new.png"
               alt="StudyZen Logo"
               width={200}
               height={200}
