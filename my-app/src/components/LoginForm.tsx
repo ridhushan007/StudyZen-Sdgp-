@@ -42,7 +42,7 @@ export function LoginForm() {
       }
       // Store token and redirect to dashboard
       localStorage.setItem("token", data.token);
-      router.push("/dashboard");
+      router.push("/progress");
     } catch (err) {
       setError("Something went wrong. Please try again.");
       console.error("Login error:", err);
