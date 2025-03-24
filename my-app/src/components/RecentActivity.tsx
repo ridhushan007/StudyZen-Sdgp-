@@ -16,7 +16,7 @@ export default function RecentActivity() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/recent-activity");
+        const response = await fetch("http://localhost:3001/api/recent-activities");
         if (!response.ok) throw new Error("Failed to fetch activities");
         const data = await response.json();
         setActivities(data);
