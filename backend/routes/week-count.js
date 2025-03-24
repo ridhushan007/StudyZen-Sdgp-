@@ -9,7 +9,7 @@ const uri = process.env.MONGO_URI;
   
   let isConnected = false;
 // Endpoint to get the number of quizzes this week
-router.get('/all', async (req, res) => {
+router.get('/week-quizzes', async (req, res) => {
   // ✅ Fixed: No '/api/quizzes' prefix
   console.log("✅ Received request at /api/quizzes/week-count"); // Debug log
   try {
@@ -39,7 +39,7 @@ router.get('/all', async (req, res) => {
 });
 
 // Endpoint to fetch all quizzes
-router.get('/api/quizzes/all', async (req, res) => {
+router.get('/all', async (req, res) => {
   try {
     const allQuizzes = await Quiz.find();  // Fetch all quizzes
     res.json(allQuizzes);
@@ -48,7 +48,16 @@ router.get('/api/quizzes/all', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
+// Endpoint to fetch number of all quizzes
+router.get('/count-quizzes', async (req, res) => {
+  try {
+    const allQuizzes = await Quiz.countDocuments();  // Fetch number of  all quizzes
+    res.json(allQuizzes);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 module.exports = router;
 
