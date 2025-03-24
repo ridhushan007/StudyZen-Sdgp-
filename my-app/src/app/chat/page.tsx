@@ -13,6 +13,19 @@ interface Message {
   sender: string;
 }
 
+// Helper function to determine the socket URL
+const getSocketUrl = () => {
+  if (typeof window !== 'undefined') {
+    // If developing locally on port 3000, use port 3001 for the backend
+    if (window.location.hostname === 'localhost' && window.location.port === '3000') {
+      return 'http://localhost:3001';
+    }
+    // Otherwise, assume same origin
+    return window.location.origin;
+  }
+  return '';
+};
+
 export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -25,8 +38,9 @@ export default function Chat() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Connect to your Socket.IO chat server
-    const socket = io(process.env.NEXT_PUBLIC_API_URL as string);
+    const socketUrl = getSocketUrl();
+    console.log('Connecting to socket server at:', socketUrl);
+    const socket = io(socketUrl);
     socketRef.current = socket;
 
     socket.on('connect', () => {
@@ -47,7 +61,6 @@ export default function Chat() {
     });
 
     socket.on('message', (data) => {
-      // Only add messages not sent by us
       if (data.sender === socketIdRef.current) return;
       const incomingMessage: Message = {
         id: Date.now().toString(),
@@ -58,7 +71,6 @@ export default function Chat() {
     });
 
     socket.on('typing', (data) => {
-      // Show "Stranger is typing..." if it's not our own typing
       if (data.sender !== socketIdRef.current) {
         setStrangerTyping(true);
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -69,7 +81,6 @@ export default function Chat() {
     });
 
     socket.on('skipped', (data) => {
-      // When a skip event is received, notify the user and reset the chat
       setStatus(data.message || 'User has disconnected. Please start a new chat.');
       setRoom('');
       setMessages([]);
@@ -99,7 +110,6 @@ export default function Chat() {
     if (!newMessage.trim() || !room) return;
     if (socketRef.current) {
       socketRef.current.emit('sendMessage', { room, message: newMessage });
-      // Add our own message locally for instant feedback
       const myMessage: Message = {
         id: Date.now().toString(),
         text: newMessage,
@@ -130,7 +140,6 @@ export default function Chat() {
 
   return (
     <div className="p-6 bg-blue-50 min-h-screen font-mono relative overflow-hidden">
-      {/* Background elements */}
       <div className="absolute top-10 left-10 text-blue-200 opacity-20 animate-float">
         <Cloud size={64} />
       </div>
