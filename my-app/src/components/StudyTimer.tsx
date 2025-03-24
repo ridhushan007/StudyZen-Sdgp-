@@ -1,24 +1,49 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
+let timerInterval: NodeJS.Timeout | null = null; // Declare as a global variable
 
 const StudyTimer = ({ userId }: { userId: string }) => {
-  const [time, setTime] = useState<number>(0); // Time in seconds
-  const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [lastStudyTime, setLastStudyTime] = useState<number | null>(null);
+  const [time, setTime] = useState<number>(() => {
+    return Number(localStorage.getItem("studyTime")) || 0; // Initialize study time from localStorage
+  });
+  const [isRunning, setIsRunning] = useState<boolean>(() => {
+    return localStorage.getItem("isRunning") === "true";
+  });
+  const [lastStudyTime, setLastStudyTime] = useState<number>(() => {
+    return Number(localStorage.getItem("lastStudyTime")) || 0; // Initialize last study time from localStorage
+  });
+  const [totalStudyTime, setTotalStudyTime] = useState<number>(() => {
+    return JSON.parse(localStorage.getItem("totalStudyTime") || "0") || 0; // Initialize total study time from localStorage
+  });
 
   useEffect(() => {
-    let timer: NodeJS.Timeout | null = null;
+    // Load total study time from localStorage when component mounts
+    const storedTotalTime = JSON.parse(localStorage.getItem("totalStudyTime") || "0") || 0;
+    setTotalStudyTime(storedTotalTime);
+  }, []);
 
-    if (isRunning) {
-      timer = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
+  useEffect(() => {
+    // Start the timer if isRunning
+    if (isRunning && !timerInterval) {
+      timerInterval = setInterval(() => {
+        setTime((prevTime) => {
+          const newTime = prevTime + 1;
+          localStorage.setItem("studyTime", newTime.toString()); // Save updated time
+          return newTime;
+        });
       }, 1000);
-    } else {
-      if (timer) clearInterval(timer);
     }
 
     return () => {
-      if (timer) clearInterval(timer);
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null; // Reset the timer reference
+      }
     };
+  }, [isRunning]);
+
+  useEffect(() => {
+    localStorage.setItem("isRunning", isRunning.toString());
   }, [isRunning]);
 
   const formatTime = (seconds: number): string => {
@@ -35,6 +60,13 @@ const StudyTimer = ({ userId }: { userId: string }) => {
   const handleStop = async () => {
     setIsRunning(false);
     setLastStudyTime(time); // Update lastStudyTime when stopped
+
+    // Calculate total study time
+    const updatedTotalTime = totalStudyTime + time;
+
+    // Save times to localStorage
+    localStorage.setItem("lastStudyTime", time.toString());
+    localStorage.setItem("totalStudyTime", JSON.stringify(updatedTotalTime)); // Update total time in localStorage
 
     // Save study time to the backend
     try {
@@ -54,36 +86,42 @@ const StudyTimer = ({ userId }: { userId: string }) => {
     }
 
     setTime(0); // Reset timer after saving
+    localStorage.removeItem("studyTime"); // Clear timer from localStorage
+    localStorage.removeItem("isRunning"); // Clear running state from localStorage
+
+    // Update the displayed total study time
+    setTotalStudyTime(updatedTotalTime);
   };
 
   return (
     <div className="flex flex-col items-center space-y-2">
       <p className="text-xl font-semibold mb-4 text-blue-900">{formatTime(time)}</p>
-  
       <div className="flex flex-col items-center space-y-2">
-  <button 
-    onClick={handleStart} 
-    disabled={isRunning} 
-    className="bg-blue-500 text-white w-24 h-10 rounded"
-  >
-    Start Learning
-  </button>
-  <button 
-    onClick={handleStop} 
-    disabled={!isRunning} 
-    className="bg-red-500 text-white w-24 h-10 rounded"
-  >
-    Stop Learning
-  </button>
-</div>
-
-
-
-  
-      {/* Conditionally render last study time */}
-      {lastStudyTime !== null && (
-        <p className="mt-4">Last studied for: {formatTime(lastStudyTime)}</p>
+        <button 
+          onClick={handleStart} 
+          disabled={isRunning} 
+          className="bg-blue-500 text-white w-40 h-10 rounded hover:bg-blue-700"
+        >
+          Start Learning
+        </button>
+        <button 
+          onClick={handleStop} 
+          disabled={!isRunning} 
+          className="bg-red-500 text-white w-40 h-10 rounded hover:bg-red-500"
+        >
+          Stop Learning
+        </button>
+      </div>
+      
+      {lastStudyTime > 0 && (
+        <p className="mt-4 text-gray-700">
+          Last Studied: {formatTime(lastStudyTime)}
+        </p>
       )}
+
+      <p className="mt-4 text-blue-900 font-bold">
+        Total Study: {formatTime(totalStudyTime)}
+      </p>
     </div>
   );
 };
