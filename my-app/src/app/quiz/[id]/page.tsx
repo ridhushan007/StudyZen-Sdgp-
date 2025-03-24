@@ -1,5 +1,12 @@
 import TakeQuizClient from './TakeQuizClient';
 
-export default function QuizPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: {
+    id: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default function QuizPage({ params }: PageProps) {
   return <TakeQuizClient quizId={params.id} />;
 }
