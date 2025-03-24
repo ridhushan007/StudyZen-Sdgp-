@@ -1,5 +1,10 @@
 import TakeQuizClient from './TakeQuizClient';
 
-export default function QuizPage({ params }: { params: { id: string } }) {
-  return <TakeQuizClient quizId={params.id} />;
+export default async function QuizPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = await params;
+  return <TakeQuizClient quizId={resolvedParams.id} />;
 }
