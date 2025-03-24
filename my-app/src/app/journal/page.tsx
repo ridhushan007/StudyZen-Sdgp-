@@ -170,10 +170,11 @@ export default function JournalPage() {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
 
+  // Fetch journal entries when component mounts
   useEffect(() => {
     async function fetchEntries() {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/journal-entries`);
+        const response = await axios.get('/api/journal-entries');
         setEntries(response.data);
       } catch (error) {
         console.error('Failed to fetch journal entries:', error);
@@ -247,7 +248,7 @@ export default function JournalPage() {
   const handleSave = async () => {
     if (!currentEntry.lectureTitle) return;
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/journal-entries`, currentEntry);
+      const response = await axios.post('/api/journal-entries', currentEntry);
       const savedEntry = response.data;
       setEntries([savedEntry, ...entries]);
       setShowForm(false);
@@ -272,13 +273,25 @@ export default function JournalPage() {
     setIsGeneratingAI(true);
     setAiError(null);
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/journal-entries/${entryId}/recommendations`);
+      const response = await axios.post(`/api/journal-entries/${entryId}/recommendations`);
       setEntries(prev => prev.map(entry => (entry.id === response.data.id ? response.data : entry)));
     } catch (error: any) {
       console.error('Failed to generate AI recommendations:', error);
       setAiError(error?.message || 'Unknown error generating recommendations');
     } finally {
       setIsGeneratingAI(false);
+    }
+  };
+
+  // Delete functionality: delete an entry by id
+  const handleDelete = async (entryId: string) => {
+    if (!window.confirm('Are you sure you want to delete this journal entry?')) return;
+    try {
+      await axios.delete(`/api/journal-entries/${entryId}`);
+      setEntries(prevEntries => prevEntries.filter(entry => entry.id !== entryId));
+    } catch (error) {
+      console.error('Error deleting journal entry:', error);
+      setAiError('Failed to delete journal entry.');
     }
   };
 
@@ -733,6 +746,16 @@ export default function JournalPage() {
                         </div>
                       </div>
                     )}
+
+                    {/* Delete Entry Button */}
+                    <div className="flex justify-end">
+                      <Button
+                        onClick={() => handleDelete(entry.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded mt-4"
+                      >
+                        Delete Entry
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
